@@ -1,4 +1,11 @@
 #include "pcsc.hh"
 #include <iostream>
 
-int main(int argc, char **argv) {}
+#include "Reader.h"
+#include "Solver.h"
+#include "Output.h"
+
+int main(int argc, char **argv) 
+{
+    Reader matrix_reader(argv[0]);
+}
