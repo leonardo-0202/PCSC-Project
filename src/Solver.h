@@ -2,19 +2,19 @@
 #define SOLVER_H
 
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include "InputData.h"
 
-class Solver 
+class Solver
 {
-    private:
-        Eigen::VectorXd A;
-        int max_iter;
-    public:
-        Solver(Eigen::VectorXd input_matrix, int iterations);
-        Eigen::VectorXd PowerMethod();
-        Eigen::VectorXd InversePowerMethod();
-        Eigen::VectorXd QR();
+private:
+    InputData input;
+public:
+    Solver(Eigen::MatrixXd input_matrix, int maxIterations);
+    Eigen::VectorXd PowerMethod(int shift = 0);
+    Eigen::MatrixXd InversesPowerMethod();
 };
 
 
-#endif // SOLVER_H
+
+#endif //SOLVER_H
+
