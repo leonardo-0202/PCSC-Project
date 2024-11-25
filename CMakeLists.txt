@@ -9,6 +9,7 @@ add_library(pcsc
   src/Reader.cpp
         src/InputData.cc
         src/InputData.h
+        src/Solver.cc
 )
 
 include_directories(eigen)
