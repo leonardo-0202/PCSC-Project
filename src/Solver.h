@@ -15,7 +15,7 @@ private:
 public:
     Solver(InputData input_data);
     VectorXd solve();
-    VectorXd powerMethod();
+    double powerMethod();
     VectorXd powerMethod(int shift);
     VectorXd inversePowerMethod();
     VectorXd inversePowerMethod(int shift);

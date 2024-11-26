@@ -12,7 +12,7 @@ struct InputData
     long _num_cols;
     long _max_iters;
     double _toll;
-    Eigen::MatrixXd _input_matrix;
+    Eigen::MatrixXd A;
 };
 
 #endif //INPUT_H

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "Solver.h"
 
 // Custom constructor
@@ -28,30 +27,43 @@ Eigen::VectorXd Solver::solver()
 }
 
 // Power method algorithm
-Eigen::EigenVectorXd Solver::powerMethod()
+double Solver::powerMethod()
 {
     // Get the number of cols in the matrix A
-    int n = input.input_matrix.cols();
-    // Initialize the eigenvector and eigenvalue
-    VectorXd x = VectorXd::Random(n);
-    double eigenval = 0.0;
+    int n = input.A.cols();
+    // Initialize the eigenvector and temp vector
+    Eigen::VectorXd b = VectorXd::Random(n);
+    Eigen::VectorXd b_tmp(n);
+    // Declare eigenvalue and norm 
+    double eigenval;
+    double norm;
 
     for (int i=0; i<input.max_iters; i++)
     {
-        VectorXd 
+        // Compute matrix-vector multiplication
+        b_tmp = input.A * b;
+        // Compute the norm
+        norm = b_tmp.norm();
+        // Update the eigenvector b
+        b = b_tmp / norm;
+        // Compute the dominant eigenvalue via Rayleigh quotient w/ denominator = 1
+        eigenval = b.transpose() * input.A * b;
+
+        // Check for convergence
+        if ( (b - b_tmp).norm() < input.tolerance) {
+            break;
+        }
     }
-=======
-#include <Eigen/Dense>
+    return eigenval;
+}
 
 Eigen::VectorXd QR_Method(Eigen::MatrixXd A, double const max_iters)
 {
-    long cnt = 0;
-    while (cnt < max_iters) {
+    for (int i=0; i<max_iters; i++) 
+    {
         auto QR = A.householderQr();
         auto Q = QR.householderQ();
         A = Q.transpose() * A * Q;
-        ++ cnt;
     }
     return A.diagonal();
->>>>>>> 3425354e0cb9ed0ff0e24ee013cfab9bb2ba024f
 }
