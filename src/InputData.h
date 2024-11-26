@@ -10,7 +10,7 @@ struct InputData
     std::string _method;
     long _num_rows;
     long _num_cols;
-    long _num_iters;
+    long _max_iters;
     double _toll;
     Eigen::MatrixXd _input_matrix;
 };

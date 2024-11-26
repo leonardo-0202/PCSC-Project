@@ -4,17 +4,23 @@
 #include <Eigen/Dense>
 #include "InputData.h"
 
+using namespace Eigen;
+
 class Solver
 {
 private:
     InputData input;
+    VectorXd eigenvec;
+    double eigenval;
 public:
-    Solver(Eigen::MatrixXd input_matrix, int maxIterations);
-    Eigen::VectorXd PowerMethod(int shift = 0);
-    Eigen::MatrixXd InversesPowerMethod();
+    Solver(InputData input_data);
+    VectorXd solve();
+    VectorXd powerMethod();
+    VectorXd powerMethod(int shift);
+    VectorXd inversePowerMethod();
+    VectorXd inversePowerMethod(int shift);
+    VectorXd qrMethod();
 };
-
-
 
 #endif //SOLVER_H
 
