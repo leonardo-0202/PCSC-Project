@@ -3,14 +3,14 @@
 #include <filesystem>
 #include "utils.cc"
 #include "Reader.h"
-#include "Solver.h"
+//#include "Solver.h"
 
 int main(int argc, char **argv)
 {
     // FOR NOW CONFIG/CONFIG.TXT IS IN cmake-build-debug
-    Reader * reader = createReader("config/config.txt");
-    Solver solver(reader->getInputData());
-    Eigen::VectorXd ans = solver.QR_Method();
+    Reader * reader = createReader("config.json");
+    // Solver solver(reader->getInputData());
+    // Eigen::VectorXd ans = solver.QR_Method();
 
     free(reader);
 

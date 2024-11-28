@@ -1,30 +1,34 @@
-//
-// Created by giova on 27/11/2024.
-//
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
 #include <string>
 #include "Reader.h"
+#include <nlohmann/json.hpp>
 
+using json = nlohmann::json;
 
 Reader* createReader(std::string const& config_path)
 {
-    std::ifstream configFile(config_path);
-    if (!configFile.is_open()) {
+    // Open input stream object and check existence
+    std::filesystem::path file_path = config_path;
+    std::ifstream config_file(file_path);
+    if (!config_file.is_open()) {
         std::cerr << "Error: Unable to open configuration file." << std::endl;
-        return nullptr;
+        return nullptr; // maybe raise error
     }
 
-    std::string data_type, method;
-    int size, num_iters;
-    double tol;
-    configFile >> data_type;
-    configFile >> method;
-    configFile >> size;
-    configFile >> num_iters;
-    configFile >> tol;
+    // Create json object
+    json data = json::parse(config_file);
+    
+    // Extract run configuration
+    std::string data_type = data.at("INPUT");
+    std::string method = data.at("METHOD");
+    int size = data.at("SIZE");
+    int max_iters = data.at("MAX_ITERS");
+    double tol = data.at("TOLERANCE");
 
+    // Exception when valid option not given
     if (data_type != "FILE" && data_type != "FUNCTION"
         && data_type != "DIAG") {
         std::cerr << "Error: Unsupported data type" << std::endl;
@@ -34,11 +38,8 @@ Reader* createReader(std::string const& config_path)
     if (data_type == "FILE") {
         FileReader * file_reader = new FileReader();
 
-        std::string file_path;
-        configFile >> file_path;
-
-        file_reader->setParams(method, size, num_iters, tol);
-        file_reader->setFilePath(file_path);
+        file_reader->setParams(method, size, max_iters, tol);
+        file_reader->setFilePath(data["FILE"].at("PATH"));
         file_reader->readMatrix();
 
         configFile.close();

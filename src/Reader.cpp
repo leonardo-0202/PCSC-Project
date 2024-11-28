@@ -5,8 +5,8 @@
 #include <Eigen/Dense>
 #include "Reader.h"
 
-void Reader::setParams(std::string const& method, int const&  size,
-    int const& num_iters, double const&  tol)
+void Reader::setParams(std::string const& method, int const& size,
+    int const& num_iters, double const& tol)
 {
     input_data.method = method;
     input_data.size = size;

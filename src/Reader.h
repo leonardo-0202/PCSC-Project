@@ -9,8 +9,8 @@ class Reader
 protected:
     InputData input_data;
 public:
-    void setParams(std::string const& method, int const&  size,
-        int const& num_iters, double const&  tol);
+    void setParams(std::string const& method, int const& size,
+        int const& num_iters, double const& tol);
     InputData getInputData() const;
     virtual void readMatrix() = 0;
 };
