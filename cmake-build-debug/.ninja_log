@@ -1,0 +1,11 @@
+# ninja log v6
+13	126	7538976425735739	CMakeFiles/pcsc.dir/src/pcsc.cc.obj	f01c8840e22abdbf
+21	2593	7544299825659428	CMakeFiles/main.dir/src/main.cc.obj	dcc99cc208e6b33f
+9	1850	7538977311981194	CMakeFiles/pcsc.dir/src/main.cc.obj	f8e941e0cdde7295
+9780	12974	7544299923254181	libpcsc.a	b2b64d3408e22076
+13	9780	7544299825569429	CMakeFiles/pcsc.dir/src/Solver.cc.obj	6e1ea93067f61a3d
+12974	17814	7544299955184699	main.exe	cdde165a192662b6
+4	837	7544334286783415	build.ninja	e9c7051db3df3603
+18	2512	7544298417137171	CMakeFiles/pcsc.dir/src/InputData.cc.obj	baa9c655ca621579
+12	2728	7544298417077214	CMakeFiles/pcsc.dir/src/Reader.cpp.obj	ae6a0af162b6a757
+31	2601	7544298417262148	CMakeFiles/pcsc.dir/src/utils.cc.obj	1f8480fd2e177407

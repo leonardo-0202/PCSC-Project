@@ -3,35 +3,46 @@
 #include <iostream>
 #include <sstream>
 #include <Eigen/Dense>
+#include "Reader.h"
 
-/*#include "Reader.h"
-#include "InputData.h"*/
-
-/*Reader::Reader(std::string file_name, std::string file_type,
-               long num_rows, long num_cols, std::string method,
-               long num_iters, double toll)
+void Reader::setParams(std::string const& method, int const&  size,
+    int const& num_iters, double const&  tol)
 {
-
+    input_data.method = method;
+    input_data.size = size;
+    input_data.num_iters = num_iters;
+    input_data.tol = tol;
 }
-*/
 
-Eigen::MatrixXd readMatrixCSV(std::string const& file_name, long const num_rows,
-    long num_cols)
+InputData Reader::getInputData() const
 {
-    Eigen::MatrixXd A(num_rows, num_cols);
-    std::ifstream file(file_name);
+    return input_data;
+}
+
+void FileReader::setFilePath(std::string path)
+{
+    file_path = path;
+}
+
+void FileReader::readMatrix()
+{
+    Eigen::MatrixXd A(input_data.size, input_data.size);
+    std::ifstream file(file_path);
     if (!file.is_open()) {
-        std::cerr << "Error opening file: " << file_name << std::endl;
-        return Eigen::MatrixXd(); // Return an empty matrix for now,
+        std::cerr << "Error opening file: " << file_path << std::endl;
+        A =  Eigen::MatrixXd();
+        return;
+        // return an empty matrix for now
         // can look into throwing exception
     }
+    std::cout << "Opening file: " << file_path << " ..." << std::endl;
     std::string line;
     long row = 0;
-    while (std::getline(file, line) && row < num_rows) {
+    while (std::getline(file, line) && row < input_data.size) {
         std::stringstream ss(line);
         std::string cell;
         long col = 0;
-        while (getline(ss, cell, ',') && col < num_cols) {
+        while (getline(ss, cell, ',') && col < input_data.size) {
             try {
                 A(row, col) = std::stod(cell);
             } catch (const std::invalid_argument& e) {
@@ -42,5 +53,7 @@ Eigen::MatrixXd readMatrixCSV(std::string const& file_name, long const num_rows,
         }
         row++;
     }
-    return A;
+    input_data.input_matrix = A;
 }
+
+// can add reading from function, or put vector as diagonal

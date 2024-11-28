@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "Solver.h"
 
 // Custom constructor
@@ -56,11 +57,28 @@ double Solver::powerMethod()
     }
     return eigenval;
 }
+=======
+#include <Eigen/Dense>
+#include "Solver.h"
+#include "InputData.h"
+>>>>>>> e626d77faf4809bd91bca7472072c8076099e0e1
 
-Eigen::VectorXd QR_Method(Eigen::MatrixXd A, double const max_iters)
+Solver::Solver(InputData input_data)
+    : input(std::move(input_data))
 {
+<<<<<<< HEAD
     for (int i=0; i<max_iters; i++) 
     {
+=======
+}
+
+Eigen::VectorXd Solver::QR_Method()
+{
+    auto A = input.input_matrix;
+    auto num_iters = input.num_iters;
+    long cnt = 0;
+    while (cnt < num_iters) {
+>>>>>>> e626d77faf4809bd91bca7472072c8076099e0e1
         auto QR = A.householderQr();
         auto Q = QR.householderQ();
         A = Q.transpose() * A * Q;

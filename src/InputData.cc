@@ -1,6 +1,6 @@
 #include "InputData.h"
 
-InputData::InputData(std::string file_name, std::string method, long num_rows,
+/*InputData::InputData(std::string file_name, std::string method, long num_rows,
         long num_cols, long num_iters, double toll, Eigen::MatrixXd input_matrix)
 {
     _file_name = file_name;
@@ -10,4 +10,4 @@ InputData::InputData(std::string file_name, std::string method, long num_rows,
     _num_iters = num_iters;
     _toll = toll;
     _input_matrix = input_matrix;
-}
+}*/
