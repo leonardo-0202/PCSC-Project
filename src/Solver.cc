@@ -2,22 +2,29 @@
 #include "Solver.h"
 #include "InputData.h"
 
-// Custom constructor
-Solver::Solver(InputData input_data)
-    : input(std::move(input_data))
+Solver::Solver(InputData input) 
 {
+    int n = input.size;
+    int num_iters = input.num_iters;
+    double tol = input.tol;
+    Eigen::MatrixXd A;
 }
 
-Solver::Solver(InputData input_data)
+PowerSolver(InputData input) : Solver(input) 
 {
-    input = input_data;
+    shift = input.at("POWER")["SHIFT"];
 }
+
+InvSolver(InputData input) : Solver(input) 
+{
+    shift = input.at("INV")["SHIFT"];
+}
+
+QRSolver(InputData input) : Solver(input) {}
 
 // Power method algorithm
-double Solver::powerMethod()
+double PowerSolver::solve()
 {
-    // Get the number of cols in the matrix A
-    int n = input.A.cols();
     // Initialize the eigenvector and temp vector
     Eigen::VectorXd b = VectorXd::Random(n);
     Eigen::VectorXd b_tmp(n);
@@ -25,30 +32,28 @@ double Solver::powerMethod()
     double eigenval;
     double norm;
 
-    for (int i=0; i<input.max_iters; i++)
+    for (int i=0; i<num_iters; i++)
     {
         // Compute matrix-vector multiplication
-        b_tmp = input.A * b;
+        b_tmp = A * b;
         // Compute the norm
         norm = b_tmp.norm();
         // Update the eigenvector b
         b = b_tmp / norm;
         // Compute the dominant eigenvalue via Rayleigh quotient w/ denominator = 1
-        eigenval = b.transpose() * input.A * b;
+        eigenval = b.transpose() * A * b;
 
         // Check for convergence
-        if ( (b - b_tmp).norm() < input.tolerance) {
+        if ( (b - b_tmp).norm() < tol) {
             break;
         }
     }
     return eigenval;
 }
 
-Eigen::VectorXd Solver::QR_Method()
+Eigen::VectorXd QRSolver::solve()
 {
-    auto A = input.input_matrix;
-    auto num_iters = input.num_iters;
-    long cnt = 0;
+    int cnt = 0;
     while (cnt < num_iters) {
         auto QR = A.householderQr();
         auto Q = QR.householderQ();

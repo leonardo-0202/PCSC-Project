@@ -1,0 +1,24 @@
+{
+    "SIZE": 5,
+    "MAX_ITERS": 500,
+    "TOLERANCE": 1e-4,
+    "SHIFT": 1e-3,
+    "INPUT": "FILE",
+    "METHOD": "QR",
+
+    "_comment1": "if input is a file with the matrix",
+    "FILE": {
+        "PATH": "./",
+        "TYPE": "TEXT",
+        "SEP": ","
+    },
+
+    "_comment2": "if input is a function",
+    "FUNCTION": {
+        "FUNC" : ""
+    },
+
+    "POWER": {
+        "SHIFT": 1
+    }
+}

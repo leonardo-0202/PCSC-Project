@@ -20,6 +20,7 @@ Reader* createReader(std::string const& config_path)
 
     // Create json object
     json data = json::parse(config_file);
+    config_file.close();
     
     // Extract run configuration
     std::string data_type = data.at("INPUT");
@@ -27,6 +28,7 @@ Reader* createReader(std::string const& config_path)
     int size = data.at("SIZE");
     int max_iters = data.at("MAX_ITERS");
     double tol = data.at("TOLERANCE");
+    json opt_params = data.at(method);
 
     // Exception when valid option not given
     if (data_type != "FILE" && data_type != "FUNCTION"
@@ -36,17 +38,31 @@ Reader* createReader(std::string const& config_path)
     }
 
     if (data_type == "FILE") {
-        FileReader * file_reader = new FileReader();
-
-        file_reader->setParams(method, size, max_iters, tol);
-        file_reader->setFilePath(data["FILE"].at("PATH"));
+        Reader *file_reader = new FileReader(method, size, max_iters, tol, opt_params, data["FILE"].at("PATH"));
         file_reader->readMatrix();
 
-        configFile.close();
         return file_reader;
     }
     else if (data_type == "FUNCTION") {
         FunctionReader * function_reader = new FunctionReader();
 
     }
+}
+
+Solver* createSolver(Reader * reader)
+{
+    if (input.method == "QR") 
+    {
+        Solver *solver = new QR_Solver(reader->getInputData());
+    }
+    else if (input.method == "POWER")
+    {
+        Solver *solver = new PowerSolver(reader->getInputData());
+    }
+    else if (input.method == "INV")
+    {
+        Solver *solver = new InvSolver(reader->getInputData());
+    }
+    free(reader)
+    return solver;
 }

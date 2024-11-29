@@ -8,16 +8,36 @@ using namespace Eigen;
 
 class Solver
 {
-private:
-    InputData input;
-    VectorXd eigenvec;
-    double eigenval;
-public:
-    Solver(InputData input_data);
-    Eigen::VectorXd PowerMethod(int shift = 0);
-    Eigen::VectorXd QR_Method();
-    Eigen::MatrixXd InversesPowerMethod();
+    protected:
+        InputData input;
+        OutputData output;
+    public:
+        Solver();
+        virtual void solve();
 };
+
+class PowerSolver : public Solver
+{
+    protected:
+        double shift;
+    public:
+        PowerSolver(InputData input);
+        void solve();
+}
+
+class QRSolver : public Solver
+{
+    public:
+        QRSolver(InputData input);
+        void solve();
+}
+
+class InvSolver : public Solver
+{
+    public:
+        InvSolver(InputData input);
+        void solve();
+}
 
 #endif //SOLVER_H
 

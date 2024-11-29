@@ -10,6 +10,7 @@ int main(int argc, char **argv)
     // FOR NOW CONFIG/CONFIG.TXT IS IN cmake-build-debug
     Reader * reader = createReader("config.json");
     // Solver solver(reader->getInputData());
+    Solver * solver = createSolver(reader)
     // Eigen::VectorXd ans = solver.QR_Method();
 
     free(reader);

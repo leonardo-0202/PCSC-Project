@@ -4,6 +4,24 @@
 #include <sstream>
 #include <Eigen/Dense>
 #include "Reader.h"
+#include <nlohmann/json.hpp>
+
+Reader(std::string const& method, int const& size, int const& num_iters, 
+    double const& tol, json const& opt_params) 
+{
+    input_data.method = method;
+    input_data.size = size;
+    input_data.num_iters = num_iters;
+    input_data.tol = tol;
+    input_data.method_config = opt_params;
+}
+
+FileReader(std::string const& method, int const& size, 
+    int const& num_iters, double const& tol, std::string const& path) 
+    : Reader(method, size, num_iters, tol)
+{
+    file_path = path;
+}
 
 void Reader::setParams(std::string const& method, int const& size,
     int const& num_iters, double const& tol)
@@ -53,6 +71,8 @@ void FileReader::readMatrix()
         }
         row++;
     }
+    file.close();
+    
     input_data.input_matrix = A;
 }
 

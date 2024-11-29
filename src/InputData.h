@@ -3,14 +3,16 @@
 
 #include <Eigen/Dense>
 #include <string>
+#include <nlohmann/json.hpp>
 
 struct InputData
 {
     std::string method;
-    long size;
-    long num_iters;
+    int size;
+    int num_iters;
     double tol;
     Eigen::MatrixXd input_matrix;
+    json method_config;
 };
 
 #endif //INPUT_H
