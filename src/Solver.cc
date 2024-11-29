@@ -1,29 +1,31 @@
+#include <iostream>
+#include <nlohmann/json.hpp>
 #include <Eigen/Dense>
 #include "Solver.h"
 #include "InputData.h"
 
 Solver::Solver(InputData input) 
 {
-    int n = input.size;
-    int num_iters = input.num_iters;
-    double tol = input.tol;
-    Eigen::MatrixXd A;
+    n = input.size;
+    num_iters = input.num_iters;
+    tol = input.tol;
+    A = input.input_matrix;
 }
 
-PowerSolver(InputData input) : Solver(input) 
+PowerSolver::PowerSolver(InputData input) : Solver(input)
 {
-    shift = input.at("POWER")["SHIFT"];
+    shift = input.method_config.at("POWER")["SHIFT"];
 }
 
-InvSolver(InputData input) : Solver(input) 
+InvSolver::InvSolver(InputData input) : Solver(input)
 {
-    shift = input.at("INV")["SHIFT"];
+    shift = input.method_config.at("INV")["SHIFT"];
 }
 
-QRSolver(InputData input) : Solver(input) {}
+QRSolver::QRSolver(InputData input) : Solver(input) {}
 
 // Power method algorithm
-double PowerSolver::solve()
+void PowerSolver::solve()
 {
     // Initialize the eigenvector and temp vector
     Eigen::VectorXd b = VectorXd::Random(n);
@@ -48,16 +50,24 @@ double PowerSolver::solve()
             break;
         }
     }
-    return eigenval;
 }
 
-Eigen::VectorXd QRSolver::solve()
+void QRSolver::solve()
 {
     int cnt = 0;
     while (cnt < num_iters) {
         auto QR = A.householderQr();
         auto Q = QR.householderQ();
         A = Q.transpose() * A * Q;
+        cnt ++;
     }
-    return A.diagonal();
+    // ritornare A.diagonal();
+    for(int i=0; i<n; i++) {
+        std::cout << A(i, i) << std::endl;
+    }
+}
+
+void InvSolver::solve()
+{
+
 }

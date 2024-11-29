@@ -3,6 +3,7 @@
 #include <string>
 #include <Eigen/Dense>
 #include "InputData.h"
+#include <nlohmann/json.hpp>
 
 class Reader
 {
@@ -10,7 +11,7 @@ protected:
     InputData input_data;
 public:
     Reader(std::string const& method, int const& size, int const& num_iters, 
-        double const& tol, json const& opt_params);
+        double const& tol, nlohmann::json const& opt_params);
     InputData getInputData() const;
     virtual void genMatrix() = 0;
 };
@@ -20,7 +21,8 @@ class FileReader : public Reader
 protected:
     std::string file_path;
 public:
-    FileReader(std::string const& path);
+    FileReader(std::string const& method, int const& size, int const& num_iters,
+        double const& tol, nlohmann::json const& opt_params, std::string const& path);
     void genMatrix();
 };
 

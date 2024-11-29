@@ -6,8 +6,8 @@
 #include "Reader.h"
 #include <nlohmann/json.hpp>
 
-Reader(std::string const& method, int const& size, int const& num_iters, 
-    double const& tol, json const& opt_params) 
+Reader::Reader(std::string const& method, int const& size, int const& num_iters,
+    double const& tol, nlohmann::json const& opt_params)
 {
     input_data.method = method;
     input_data.size = size;
@@ -16,9 +16,10 @@ Reader(std::string const& method, int const& size, int const& num_iters,
     input_data.method_config = opt_params;
 }
 
-FileReader(std::string const& method, int const& size, 
-    int const& num_iters, double const& tol, std::string const& path) 
-    : Reader(method, size, num_iters, tol)
+FileReader::FileReader(std::string const& method, int const& size,
+    int const& num_iters, double const& tol, nlohmann::json const& opt_params,
+    std::string const& path)
+    : Reader(method, size, num_iters, tol, opt_params)
 {
     file_path = path;
 }

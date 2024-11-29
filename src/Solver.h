@@ -3,17 +3,21 @@
 
 #include <Eigen/Dense>
 #include "InputData.h"
+#include "Output.h"
 
 using namespace Eigen;
 
 class Solver
 {
     protected:
-        InputData input;
-        OutputData output;
+        int n;
+        int num_iters;
+        double tol;
+        Eigen::MatrixXd A;
+        //OutputData output;
     public:
-        Solver();
-        virtual void solve();
+        Solver(InputData input);
+        virtual void solve() = 0;
 };
 
 class PowerSolver : public Solver
@@ -23,21 +27,23 @@ class PowerSolver : public Solver
     public:
         PowerSolver(InputData input);
         void solve();
-}
+};
 
 class QRSolver : public Solver
 {
     public:
         QRSolver(InputData input);
         void solve();
-}
+};
 
 class InvSolver : public Solver
 {
+    protected:
+        double shift;
     public:
         InvSolver(InputData input);
         void solve();
-}
+};
 
 #endif //SOLVER_H
 

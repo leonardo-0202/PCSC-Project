@@ -12,7 +12,7 @@ struct InputData
     int num_iters;
     double tol;
     Eigen::MatrixXd input_matrix;
-    json method_config;
+    nlohmann::json method_config;
 };
 
 #endif //INPUT_H
