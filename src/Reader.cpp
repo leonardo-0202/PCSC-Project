@@ -23,26 +23,12 @@ FileReader(std::string const& method, int const& size,
     file_path = path;
 }
 
-void Reader::setParams(std::string const& method, int const& size,
-    int const& num_iters, double const& tol)
-{
-    input_data.method = method;
-    input_data.size = size;
-    input_data.num_iters = num_iters;
-    input_data.tol = tol;
-}
-
 InputData Reader::getInputData() const
 {
     return input_data;
 }
 
-void FileReader::setFilePath(std::string path)
-{
-    file_path = path;
-}
-
-void FileReader::readMatrix()
+void FileReader::genMatrix()
 {
     Eigen::MatrixXd A(input_data.size, input_data.size);
     std::ifstream file(file_path);
