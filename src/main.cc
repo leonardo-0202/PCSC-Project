@@ -3,15 +3,17 @@
 #include "utils.h"
 #include "Reader.h"
 #include "Solver.h"
+#include "OutputGenerator.h"
+
 
 int main(int argc, char **argv)
 {
-    // FOR NOW CONFIG/CONFIG.TXT IS IN cmake-build-debug
     Reader * reader = createReader("..\\config.json");
-    // Solver solver(reader->getInputData());
     Solver * solver = createSolver(reader);
-    // Eigen::VectorXd ans = solver.QR_Method();
+
     solver->solve();
+    OutputGenerator x = OutputGenerator(solver->getOutput());
+    x.saveOutput();
     free(reader);
     free(solver);
     // Solver solver(data_reader.getInputData());

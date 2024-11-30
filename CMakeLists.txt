@@ -1,17 +1,39 @@
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.26)
 project (PCSC-project)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 add_compile_options(-Wa,-mbig-obj)
+
+set(GIT_EXECUTABLE "git")
+option(GIT_SUBMODULE "Check submodules during build" ON)
+if(GIT_SUBMODULE)
+    message(STATUS "Submodule update")
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive googletest WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+        message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+    endif()
+endif(GIT_SUBMODULE)
+
+
+option(DOCUMENTATION "Activate documentation" ON)
+if (DOCUMENTATION)
+    set(DOXYGEN_EXECUTABLE doxygen)
+    set(DOXYFILE Doxyfile)
+    add_custom_target(doc_doxygen ALL
+            COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYFILE}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
+endif(DOCUMENTATION)
 
 include_directories(eigen external)
 
 add_library(eigenvalues
         src/Reader.cpp
-        src/InputData.cc
         src/Solver.cc
         src/utils.cc
+        src/OutputGenerator.cc
 )
 
 add_subdirectory(googletest)

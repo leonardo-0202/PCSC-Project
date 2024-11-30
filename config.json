@@ -1,7 +1,7 @@
 {
-    "SIZE": 2,
-    "MAX_ITERS": 500,
-    "TOLERANCE": 1e-4,
+    "SIZE": 5,
+    "MAX_ITERS": 5000,
+    "TOLERANCE": 1e-9,
     "SHIFT": 1e-3,
     "INPUT": "FILE",
     "METHOD": "QR",

@@ -1,7 +1,9 @@
 #include <iostream>
+#include <chrono>
+#include <ctime>
 #include <nlohmann/json.hpp>
-#include "Solver.h"
 #include "InputData.h"
+#include "Solver.h"
 
 Solver::Solver(InputData input) 
 {
@@ -22,6 +24,10 @@ InvSolver::InvSolver(InputData input) : Solver(input)
 }
 
 QRSolver::QRSolver(InputData input) : Solver(input) {}
+
+OutputData Solver::getOutput() {
+    return output;
+}
 
 // Power method algorithm
 void PowerSolver::solve()
@@ -54,16 +60,28 @@ void PowerSolver::solve()
 void QRSolver::solve()
 {
     int cnt = 0;
-    while (cnt < num_iters) {
+    double err = tol + 1;
+
+    auto a = std::chrono::high_resolution_clock::now();
+    while (cnt < num_iters && err >= tol) {
         auto QR = A.householderQr();
         auto Q = QR.householderQ();
         A = Q.transpose() * A * Q;
         cnt ++;
+
+        // error calculation (sub_diagonal norm)
+        err = 0;
+        for(int row=0; row<n-1; row++) {
+            err += pow(A(row+1, row), 2);
+        }
+        err = sqrt(err);
     }
-    // ritornare A.diagonal();
-    for(int i=0; i<n; i++) {
-        std::cout << A(i, i) << std::endl;
-    }
+    auto b = std::chrono::high_resolution_clock::now();
+    output.estimated_eigenvalues = A.diagonal();
+    output.estimated_error = err;
+    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+    output.iterations = cnt;
+    output.method = "QR Method";
 }
 
 void InvSolver::solve()

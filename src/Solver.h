@@ -2,7 +2,7 @@
 #define SOLVER_H
 
 #include "InputData.h"
-#include "Output.h"
+#include "OutputData.h"
 
 using namespace Eigen;
 
@@ -13,9 +13,10 @@ class Solver
         int num_iters;
         double tol;
         Eigen::MatrixXd A;
-        //OutputData output;
+        OutputData output;
     public:
         Solver(InputData input);
+        OutputData getOutput();
         virtual void solve() = 0;
 };
 
