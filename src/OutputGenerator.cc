@@ -21,7 +21,7 @@ std::string outToHTML(const Eigen::VectorXd& vec) {
 void OutputGenerator::saveOutput() {
     std::cout << "Saving output file..." << std::endl;
 
-    std::ofstream htmlFile("output.html");
+    std::ofstream htmlFile("../output.html");
 
     htmlFile << R"(
     <!DOCTYPE html>
