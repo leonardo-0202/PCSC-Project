@@ -1,5 +1,5 @@
 {
-    "SIZE": 5,
+    "SIZE": 2,
     "MAX_ITERS": 500,
     "TOLERANCE": 1e-4,
     "SHIFT": 1e-3,
@@ -8,14 +8,18 @@
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {
-        "PATH": "./",
+        "PATH": "C:\\Users\\giova\\Desktop\\example.csv",
         "TYPE": "TEXT",
         "SEP": ","
     },
 
     "_comment2": "if input is a function",
     "FUNCTION": {
-        "FUNC" : ""
+        "FUNC" : "i + j + 10"
+    },
+
+    "QR": {
+
     },
 
     "POWER": {

@@ -1,23 +1,22 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.16)
 project (PCSC-project)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(eigenvalues
-  src/Reader.cpp
-        src/InputData.cc
-        src/InputData.h
-        src/Solver.cc
-)
+add_compile_options(-Wa,-mbig-obj)
 
 include_directories(eigen external)
 
+add_library(eigenvalues
+        src/Reader.cpp
+        src/InputData.cc
+        src/Solver.cc
+        src/utils.cc
+)
+
 add_subdirectory(googletest)
 
-add_executable(main src/main.cc src/Reader.h
-        src/Solver.h
-        src/Output.h
-        src/InputData.h)
+add_executable(main src/main.cc)
 
 target_link_libraries(main eigenvalues)
 

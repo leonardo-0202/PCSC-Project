@@ -2,9 +2,9 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <Eigen/Dense>
-#include "Reader.h"
 #include <nlohmann/json.hpp>
+//#include <exprtk/exprtk.hpp>
+#include "Reader.h"
 
 Reader::Reader(std::string const& method, int const& size, int const& num_iters,
     double const& tol, nlohmann::json const& opt_params)
@@ -22,6 +22,14 @@ FileReader::FileReader(std::string const& method, int const& size,
     : Reader(method, size, num_iters, tol, opt_params)
 {
     file_path = path;
+}
+
+FunctionReader::FunctionReader(std::string const& method, int const& size,
+    int const& num_iters, double const& tol, nlohmann::json const& opt_params,
+    std::string const& genFunc)
+    : Reader(method, size, num_iters, tol, opt_params)
+{
+    func = genFunc;
 }
 
 InputData Reader::getInputData() const
@@ -63,4 +71,29 @@ void FileReader::genMatrix()
     input_data.input_matrix = A;
 }
 
-// can add reading from function, or put vector as diagonal
+void FunctionReader::genMatrix()
+{
+    Eigen::MatrixXd A(input_data.size, input_data.size);
+    double i, j;
+
+    /*
+    exprtk::symbol_table<double> symbol_table;
+    symbol_table.add_variable("i", i);
+    symbol_table.add_variable("j", j);
+    exprtk::expression<double> expression;
+    expression.register_symbol_table(symbol_table);
+
+    exprtk::parser<double> parser;
+    parser.compile(func, expression);
+    */
+
+    for(int row = 0; row < input_data.size; row++) {
+        for(int col = 0; col<input_data.size; col++) {
+            i = row + 1;
+            j = col + 1;
+            //A(row,col) = expression.value();
+            std::cout << A(row,col) << std::endl;
+        }
+    }
+    input_data.input_matrix = A;
+}

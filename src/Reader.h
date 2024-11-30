@@ -1,7 +1,6 @@
 #ifndef READER_H
 #define READER_H
 #include <string>
-#include <Eigen/Dense>
 #include "InputData.h"
 #include <nlohmann/json.hpp>
 
@@ -29,8 +28,10 @@ public:
 class FunctionReader : public Reader
 {
 protected:
-    
+    std::string func;
 public:
+    FunctionReader(std::string const& method, int const& size, int const& num_iters,
+        double const& tol, nlohmann::json const& opt_params, std::string const& func);
     void genMatrix();
 };
 

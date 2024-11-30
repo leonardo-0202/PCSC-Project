@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <filesystem>
 #include <string>
 #include <nlohmann/json.hpp>
@@ -11,6 +10,7 @@ using json = nlohmann::json;
 Reader* createReader(std::string const& config_path)
 {
     // Open input stream object and check existence
+    std::cout << "Opening file ... " << config_path << std::endl;
     std::filesystem::path file_path = config_path;
     std::ifstream config_file(file_path);
     std::cout << file_path << std::endl;
@@ -39,13 +39,18 @@ Reader* createReader(std::string const& config_path)
     }
 
     if (data_type == "FILE") {
-        Reader *file_reader = new FileReader(method, size, max_iters, tol, opt_params, data["FILE"].at("PATH"));
+        Reader *file_reader = new FileReader(method, size, max_iters, tol,
+            opt_params, data["FILE"].at("PATH"));
         file_reader->genMatrix();
 
         return file_reader;
     }
     else if (data_type == "FUNCTION") {
-        //FunctionReader * function_reader = new FunctionReader();
+        FunctionReader * function_reader = new FunctionReader(method, size, max_iters, tol,
+            opt_params, data["FUNCTION"].at("FUNC"));
+        function_reader->genMatrix();
+
+        return function_reader;
     }
 }
 

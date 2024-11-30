@@ -1,6 +1,5 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <Eigen/Dense>
 #include "Solver.h"
 #include "InputData.h"
 
