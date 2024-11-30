@@ -12,7 +12,7 @@ class Solver
         int n;
         int num_iters;
         double tol;
-        Eigen::MatrixXd A;
+        Eigen::MatrixXcd A;
         OutputData output;
     public:
         Solver(InputData input);

@@ -6,10 +6,11 @@
 
 OutputGenerator::OutputGenerator(OutputData output) : out(output) {}
 
-std::string outToHTML(const Eigen::VectorXd& vec) {
+std::string outToHTML(const Eigen::VectorXcd & vec) {
     std::string html = "<p style=\"text-align: center;\">";
     for (int i = 0; i < vec.size(); ++i) {
-        html += "λ" + std::to_string(i + 1) + " = " + std::to_string(vec[i]);
+        html += "λ" + std::to_string(i + 1) + " = "
+            + std::to_string(vec[i].real()) + " + i" + std::to_string(vec[i].imag());
         if (i < vec.size() - 1) {
             html += ", ";
         }

@@ -39,11 +39,11 @@ InputData Reader::getInputData() const
 
 void FileReader::genMatrix()
 {
-    Eigen::MatrixXd A(input_data.size, input_data.size);
+    Eigen::MatrixXcd A(input_data.size, input_data.size);
     std::ifstream file(file_path);
     if (!file.is_open()) {
         std::cerr << "Error opening file: " << file_path << std::endl;
-        A =  Eigen::MatrixXd();
+        A =  Eigen::MatrixXcd();
         return;
         // return an empty matrix for now
         // can look into throwing exception
@@ -73,7 +73,7 @@ void FileReader::genMatrix()
 
 void FunctionReader::genMatrix()
 {
-    Eigen::MatrixXd A(input_data.size, input_data.size);
+    Eigen::MatrixXcd A(input_data.size, input_data.size);
     double i, j;
 
     /*

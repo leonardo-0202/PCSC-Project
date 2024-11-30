@@ -7,7 +7,7 @@ struct OutputData {
     double estimated_error;
     double execution_time;
     int iterations;
-    Eigen::VectorXd estimated_eigenvalues;
+    Eigen::VectorXcd estimated_eigenvalues;
 };
 
 #endif //OUTPUTDATA_H

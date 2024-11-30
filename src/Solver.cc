@@ -33,10 +33,10 @@ OutputData Solver::getOutput() {
 void PowerSolver::solve()
 {
     // Initialize the eigenvector and temp vector
-    Eigen::VectorXd b = VectorXd::Random(n);
-    Eigen::VectorXd b_tmp(n);
+    Eigen::VectorXcd b = VectorXcd::Random(n);
+    Eigen::VectorXcd b_tmp(n);
     // Declare eigenvalue and norm 
-    double eigenval;
+    Eigen::dcomplex eigenval;
     double norm;
 
     for (int i=0; i<num_iters; i++)
@@ -72,7 +72,7 @@ void QRSolver::solve()
         // error calculation (sub_diagonal norm)
         err = 0;
         for(int row=0; row<n-1; row++) {
-            err += pow(A(row+1, row), 2);
+            err += pow(norm(A(row+1, row)) , 2);
         }
         err = sqrt(err);
     }
