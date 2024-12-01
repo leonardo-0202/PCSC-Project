@@ -42,6 +42,7 @@ class InvSolver : public Solver
         double shift;
     public:
         InvSolver(InputData input);
+        Eigen::complex<double> invPowerMethod(Eigen::VectorXcd &b);
         void solve();
 };
 

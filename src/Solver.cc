@@ -79,6 +79,53 @@ void PowerSolver::solve()
     output.method = "Power Method";    
 }
 
+void InvSolver::solve()
+{
+    // Create container for all eigenvalues
+    Eigen::VectorXcd eigenvals(n);
+    Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
+    // Apply shift to matrix A
+    A -= shift * Eigen::MatrixXcd::Identity(n,n);
+
+    //auto a = std::chrono::high_resolution_clock::now();
+    for (int i=0; i<n; i++)
+    {
+        // Get the largest eigenvalue via power method
+        eigenvals(i) = invPowerMethod(b);
+        // Deflate matrix
+        A -= eigenvals(i) * b * b.adjoint();
+    }
+
+    std::cout << eigenvals << std::endl;
+}
+
+Eigen::dcomplex InvSolver::invPowerMethod(Eigen::VectorXcd &b)
+{
+    // Declare eigenvalue
+    Eigen::dcomplex eigenval;
+    // Matrix decomposition
+    auto decomp = A.completeOrthogonalDecomposition();
+    for (int i=0; i<num_iters; i++)
+    {
+        Eigen::VectorXcd b_tmp(n);
+        // Approximation of eigenvector
+        b_tmp = decomp.solve(b);
+        // Compute the norm
+        auto norm = b_tmp.norm();
+        // Update the eigenvector b
+        b = b_tmp / norm;
+        // Compute the dominant eigenvalue via Rayleigh quotient
+        eigenval = Eigen::dcomplex(b.adjoint() * A * b) 
+                        / Eigen::dcomplex(b.adjoint() * b);
+
+        // Check for convergence
+        if ( (b - b_tmp).norm() < tol) {
+            break;
+        }
+    }
+    return eigenval;   
+}
+
 void QRSolver::solve()
 {
     int cnt = 0;
@@ -104,9 +151,4 @@ void QRSolver::solve()
     output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
     output.iterations = cnt;
     output.method = "QR Method";
-}
-
-void InvSolver::solve()
-{
-
 }
