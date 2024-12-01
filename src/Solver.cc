@@ -29,32 +29,54 @@ OutputData Solver::getOutput() {
     return output;
 }
 
-// Power method algorithm
-void PowerSolver::solve()
+Eigen::dcomplex PowerSolver::powerMethod(Eigen::VectorXcd &b)
 {
-    // Initialize the eigenvector and temp vector
-    Eigen::VectorXcd b = VectorXcd::Random(n);
-    Eigen::VectorXcd b_tmp(n);
-    // Declare eigenvalue and norm 
+    // Declare eigenvalue
     Eigen::dcomplex eigenval;
-    double norm;
 
     for (int i=0; i<num_iters; i++)
     {
         // Compute matrix-vector multiplication
-        b_tmp = A * b;
+        Eigen::VectorXcd b_tmp = A * b;
         // Compute the norm
-        norm = b_tmp.norm();
+        auto norm = b_tmp.norm();
         // Update the eigenvector b
         b = b_tmp / norm;
         // Compute the dominant eigenvalue via Rayleigh quotient w/ denominator = 1
-        eigenval = b.transpose() * A * b;
+        eigenval = Eigen::dcomplex(b.adjoint() * A * b) 
+                    / Eigen::dcomplex((b.adjoint() * b));
 
         // Check for convergence
         if ( (b - b_tmp).norm() < tol) {
             break;
         }
     }
+    return eigenval;
+}
+
+void PowerSolver::solve()
+{
+    // Create container for all eigenvalues
+    Eigen::VectorXcd eigenvals(n);
+    Eigen::VectorXcd b = VectorXcd::Random(n);
+    // Apply shift to matrix A
+    A -= shift * Eigen::MatrixXcd::Identity(n,n);
+
+    auto a = std::chrono::high_resolution_clock::now();
+    for (int i=0; i<n; i++)
+    {
+        // Get the largest eigenvalue via power method
+        eigenvals(i) = powerMethod(b);
+        // Deflate matrix
+        A -= eigenvals(i) * b * b.adjoint();
+    }
+
+    auto b = std::chrono::high_resolution_clock::now();
+    output.estimated_eigenvalues = eigenvals;
+    //output.estimated_error = err;
+    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+    // output.iterations = cnt;
+    output.method = "Power Method";    
 }
 
 void QRSolver::solve()
