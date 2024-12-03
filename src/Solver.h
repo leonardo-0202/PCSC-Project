@@ -29,10 +29,26 @@ class PowerSolver : public Solver
         void solve();
 };
 
+/**
+ * @class QRSolver
+ * @brief Derived Solver class that finds the eigenvalues using the QR Method.
+ */
 class QRSolver : public Solver
 {
     public:
+        /**
+        * @brief Consturcts a QRSolver object.
+        * @param input The input data of the problem.
+        */
         QRSolver(InputData input);
+        /**
+        * @brief Computes the Q matrix in the QR decomposition of the input matrix.
+        * @param A The matrix to find the decomposition of.
+        */
+        Eigen::MatrixXcd QRDecompQ(Eigen::MatrixXcd A);
+        /**
+        * @brief Solves for the eigenvalues using the QR method.
+        */
         void solve();
 };
 

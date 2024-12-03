@@ -126,6 +126,27 @@ Eigen::dcomplex InvSolver::invPowerMethod(Eigen::VectorXcd &b)
     return eigenval;   
 }
 
+Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)
+{
+    Eigen::MatrixXcd Q = Eigen::MatrixXd::Identity(n,n);
+    Eigen::MatrixXcd R = A;
+    for (int j=0; j<n; j++) {
+        Eigen::VectorXcd x = R.block(j, j, n - j, 1);
+        Eigen::VectorXcd e = Eigen::VectorXcd::Zero(n - j);
+        e(0) = std::complex<double>(x.norm(), 0);
+        Eigen::VectorXcd v = x - e;
+        v.normalize();
+
+        Eigen::MatrixXcd H = Eigen::MatrixXcd::Identity(n, n);
+        Eigen::MatrixXcd H_sub = Eigen::MatrixXcd::Identity(n - j, n - j) - 2.0 * (v * v.adjoint());
+        H.block(j, j, n - j, n - j) = H_sub;
+
+        Q = Q * H;
+        R = H * R;
+    }
+    return Q;
+}
+
 void QRSolver::solve()
 {
     int cnt = 0;
@@ -133,8 +154,7 @@ void QRSolver::solve()
 
     auto a = std::chrono::high_resolution_clock::now();
     while (cnt < num_iters && err >= tol) {
-        auto QR = A.householderQr();
-        auto Q = QR.householderQ();
+        auto Q = QRDecompQ(A);
         A = Q.transpose() * A * Q;
         cnt ++;
 
