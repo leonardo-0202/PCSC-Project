@@ -38,6 +38,7 @@ public:
      * @return An InputData object containing the matrix and related parameters.
      */
     InputData getInputData() const;
+    void printMatrix() const;
     /**
      * @brief Pure virtual function to generate the matrix.
      *        Must be implemented by derived classes.
@@ -59,6 +60,7 @@ protected:
 public:
     FileReader(std::string const& method, int const& size, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params, std::string const& path);
+    std::complex<double> parseComplex(std::string s);
     void genMatrix();
 };
 

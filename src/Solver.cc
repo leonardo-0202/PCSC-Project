@@ -58,7 +58,7 @@ void PowerSolver::solve()
 {
     // Create container for all eigenvalues
     Eigen::VectorXcd eigenvals(n);
-    Eigen::VectorXcd b = VectorXcd::Random(n);
+    Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
     // Apply shift to matrix A
     A -= shift * Eigen::MatrixXcd::Identity(n,n);
 
@@ -71,10 +71,10 @@ void PowerSolver::solve()
         A -= eigenvals(i) * b * b.adjoint();
     }
 
-    auto b = std::chrono::high_resolution_clock::now();
+    auto b_end = std::chrono::high_resolution_clock::now();
     output.estimated_eigenvalues = eigenvals;
     //output.estimated_error = err;
-    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b_end - a).count();
     // output.iterations = cnt;
     output.method = "Power Method";    
 }
