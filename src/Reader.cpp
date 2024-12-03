@@ -3,7 +3,10 @@
 #include <iostream>
 #include <sstream>
 #include <nlohmann/json.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image/stb_image.h"
 //#include <exprtk/exprtk.hpp>
+#include "InputData.h"
 #include "Reader.h"
 
 Reader::Reader(std::string const& method, int const& size, int const& num_iters,
@@ -30,6 +33,14 @@ FunctionReader::FunctionReader(std::string const& method, int const& size,
     : Reader(method, size, num_iters, tol, opt_params)
 {
     func = genFunc;
+}
+
+PictureReader::PictureReader(std::string const& method, int const& size,
+    int const& num_iters, double const& tol, nlohmann::json const& opt_params,
+    std::string const& img_path)
+    : Reader(method, size, num_iters, tol, opt_params)
+{
+    path = img_path;
 }
 
 InputData Reader::getInputData() const
@@ -96,4 +107,25 @@ void FunctionReader::genMatrix()
         }
     }
     input_data.input_matrix = A;
+}
+
+void PictureReader::genMatrix() {
+    int height, width, channels;
+    const char * img_path = path.c_str();
+    unsigned char* data = stbi_load(img_path, &height, &width, &channels, 1);
+    if (!data) {
+        std::cerr << "Error: Unable to load image at " << img_path << std::endl;
+    }
+    if (height != width) {
+        std::cerr << "Warning: height must be equal to width. Cropping." << std::endl;
+    }
+    int sz = std::min(height,width);
+    Eigen::MatrixXcd A(sz,sz);
+    for(int i=0; i<sz; i++) {
+        for(int j=0; j<sz; j++) {
+            A(i,j) = static_cast<double>(data[i*sz + j]);
+        }
+    }
+    input_data.input_matrix = A;
+    stbi_image_free(data);
 }

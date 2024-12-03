@@ -1,9 +1,9 @@
 {
     "SIZE": 5,
-    "MAX_ITERS": 5000,
+    "MAX_ITERS": 50,
     "TOLERANCE": 1e-9,
     "SHIFT": 1e-3,
-    "INPUT": "FILE",
+    "INPUT": "PICTURE",
     "METHOD": "QR",
 
     "_comment1": "if input is a file with the matrix",
@@ -17,6 +17,12 @@
     "FUNCTION": {
         "FUNC" : "i + j + 10"
     },
+
+    "_comment3": "if input is a picture",
+    "PICTURE": {
+        "PATH" : "C:\\Users\\giova\\Desktop\\cat.png"
+    },
+
 
     "QR": {
 
