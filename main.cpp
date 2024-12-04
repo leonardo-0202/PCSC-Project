@@ -30,11 +30,7 @@ class PowerSolver : public Solver
             for (int i=0; i<num_iters; i++)
             {
                 Eigen::VectorXcd b_tmp(n);
-                if (shift != 0) {
-                    b_tmp = A.partialPivLu().solve(b);
-                } else {
-                    b_tmp = A * b;
-                }
+                b_tmp = A * b;
                 // Compute the norm
                 auto norm = b_tmp.norm();
                 // Update the eigenvector b
@@ -89,17 +85,17 @@ void InvSolver::solve()
 {
     // Create container for all eigenvalues
     Eigen::VectorXcd eigenvals(n);
-    Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
-    // Apply shift to matrix A
-    A -= shift * Eigen::MatrixXcd::Identity(n,n);
 
     //auto a = std::chrono::high_resolution_clock::now();
     for (int i=0; i<n; i++)
     {
+        Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
+        std::cout << b << std::endl;
+        std::cout << "test" << std::endl;
         // Get the largest eigenvalue via power method
         eigenvals(i) = invPowerMethod(b);
         // Deflate matrix
-        A -= eigenvals(i) * b * b.adjoint();
+        A -= eigenvals(i) * b * b.adjoint() / (b.adjoint() * b);
     }
 
     std::cout << eigenvals << std::endl;
@@ -113,9 +109,8 @@ Eigen::dcomplex InvSolver::invPowerMethod(Eigen::VectorXcd &b)
     auto decomp = A.completeOrthogonalDecomposition();
     for (int i=0; i<num_iters; i++)
     {
-        Eigen::VectorXcd b_tmp(n);
         // Approximation of eigenvector
-        b_tmp = decomp.solve(b);
+        Eigen::VectorXcd b_tmp = decomp.solve(b);
         // Compute the norm
         auto norm = b_tmp.norm();
         // Update the eigenvector b
@@ -135,7 +130,7 @@ Eigen::dcomplex InvSolver::invPowerMethod(Eigen::VectorXcd &b)
 class ShiftSolver : public Solver
 {
     protected:
-        double shift;
+        Eigen::dcomplex shift;
     public:
         ShiftSolver(Eigen::MatrixXcd matrix, int n, int num_iters, double tol, double shift) :
             Solver(matrix, n, num_iters, tol), shift(shift) {};
@@ -145,14 +140,15 @@ class ShiftSolver : public Solver
 
 Eigen::dcomplex ShiftSolver::shiftMethod(Eigen::VectorXcd &b)
 {
-    // Declare eigenvalue
+    // Declare eigenvalue and eigenvector
     Eigen::dcomplex eigenval;
+    // Apply shift to matrix A
+    Eigen::MatrixXcd shifted = A - shift * Eigen::MatrixXcd::Identity(n,n);
 
-    auto decomp = A.completeOrthogonalDecomposition();
+    auto decomp = shifted.completeOrthogonalDecomposition();
     for (int i=0; i<num_iters; i++)
     {
-        Eigen::VectorXcd b_tmp(n);
-        b_tmp = decomp.solve(b);
+        Eigen::VectorXcd b_tmp = decomp.solve(b);
         // Compute the norm
         auto norm = b_tmp.norm();
         // Update the eigenvector b
@@ -173,13 +169,12 @@ void ShiftSolver::solve()
 {
     // Create container for all eigenvalues
     Eigen::VectorXcd eigenvals(n);
-    Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
-    // Apply shift to matrix A
-    A -= shift * Eigen::MatrixXcd::Identity(n,n);
 
     //auto a = std::chrono::high_resolution_clock::now();
+    //shift = A.trace() / Eigen::dcomplex(n);
     for (int i=0; i<n; i++)
     {
+        Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
         // Get the largest eigenvalue via power method
         eigenvals(i) = shiftMethod(b);
         // Deflate matrix
@@ -187,19 +182,19 @@ void ShiftSolver::solve()
     }
 
     
-    std::cout << eigenvals + Eigen::VectorXcd::Constant(n, shift) << std::endl;
+    std::cout << eigenvals << std::endl;
 }
 
 int main()
 {
     // Example: Create a 3x3 matrix A
     Eigen::MatrixXcd A(3, 3);
-    A << std::complex<double>(4, 0), std::complex<double>(1, 0), std::complex<double>(1, 0),
-         std::complex<double>(1, 0), std::complex<double>(3, 0), std::complex<double>(1, 0),
-         std::complex<double>(1, 0), std::complex<double>(1, 0), std::complex<double>(2, 0);
+    A << std::complex<double>(5, 0), std::complex<double>(3, 0), std::complex<double>(3, 0),
+         std::complex<double>(7, 0), std::complex<double>(2, 0), std::complex<double>(9, 0),
+         std::complex<double>(1, 0), std::complex<double>(4, 0), std::complex<double>(2, 0);
 
     // Create a PowerSolver instance and solve for eigenvalues
-    ShiftSolver solver(A, 3, 1000, 1e-6, 1.0);
+    ShiftSolver solver(A, 3, 5000, 1e-5, 11.0);
     solver.solve();
 
     return 0;
