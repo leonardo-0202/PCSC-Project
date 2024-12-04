@@ -8,7 +8,14 @@
 
 int main(int argc, char **argv)
 {
-    Reader * reader = createReader("..\\config.json");
+    Reader * reader;
+    try {
+        reader = createReader("..\\config.json");
+    }
+    catch (const std::ios_base::failure& e){
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
     Solver * solver = createSolver(reader);
 
     solver->solve();

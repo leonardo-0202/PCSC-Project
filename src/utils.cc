@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 #include <filesystem>
 #include <string>
 #include <nlohmann/json.hpp>
@@ -13,10 +14,8 @@ Reader* createReader(std::string const& config_path)
     std::cout << "Opening file ... " << config_path << std::endl;
     std::filesystem::path file_path = config_path;
     std::ifstream config_file(file_path);
-    std::cout << file_path << std::endl;
     if (!config_file.is_open()) {
-        std::cerr << "Error: Unable to open configuration file." << std::endl;
-        return nullptr; // maybe raise error
+        throw std::ios_base::failure("Failed to open config. file: " + config_path);
     }
 
     // Create json object
@@ -33,15 +32,14 @@ Reader* createReader(std::string const& config_path)
 
     // Exception when valid option not given
     if (data_type != "FILE" && data_type != "FUNCTION"
-        && data_type != "DIAG") {
-        std::cerr << "Error: Unsupported data type" << std::endl;
-        return nullptr;
+        && data_type != "PICTURE") {
+        throw std::ios_base::failure("Unsupported data type.");
     }
 
     if (data_type == "FILE") {
         Reader *file_reader = new FileReader(method, size, max_iters, tol,
             opt_params, data["FILE"].at("PATH"));
-        file_reader->genMatrix();
+        file_reader->genMatrix();   
 
         return file_reader;
     }
@@ -52,12 +50,24 @@ Reader* createReader(std::string const& config_path)
 
         return function_reader;
     }
+    else if (data_type == "PICTURE") {
+        PictureReader * picture_reader = new PictureReader(method, size, max_iters, tol,
+            opt_params, data["PICTURE"].at("PATH"));
+        picture_reader->genMatrix();
+
+        return picture_reader;
+    }
+    std::cout << "Reader created succesfully." << std::endl;
 }
 
 Solver* createSolver(Reader * reader)
 {
     InputData input = reader->getInputData();
     Solver * solver;
+    if (input.method != "QR" && input.method != "POWER"
+        && input.method != "INV") {
+        throw std::ios_base::failure("Unsupported solver method.");
+    }
     if (input.method == "QR")
     {
         solver = new QRSolver(reader->getInputData());
