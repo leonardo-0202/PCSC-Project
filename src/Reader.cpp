@@ -9,36 +9,33 @@
 #include "InputData.h"
 #include "Reader.h"
 
-Reader::Reader(std::string const& method, int const& size, int const& num_iters,
+Reader::Reader(std::string const& method, int const& num_iters,
     double const& tol, nlohmann::json const& opt_params)
 {
     input_data.method = method;
-    input_data.size = size;
     input_data.num_iters = num_iters;
     input_data.tol = tol;
     input_data.method_config = opt_params;
 }
 
-FileReader::FileReader(std::string const& method, int const& size,
-    int const& num_iters, double const& tol, nlohmann::json const& opt_params,
-    std::string const& path)
-    : Reader(method, size, num_iters, tol, opt_params)
+FileReader::FileReader(std::string const& method, int const& num_iters, double const& tol,
+    nlohmann::json const& opt_params, std::string const& path)
+    : Reader(method, num_iters, tol, opt_params)
 {
     file_path = path;
 }
 
-FunctionReader::FunctionReader(std::string const& method, int const& size,
-    int const& num_iters, double const& tol, nlohmann::json const& opt_params,
-    std::string const& genFunc)
-    : Reader(method, size, num_iters, tol, opt_params)
+FunctionReader::FunctionReader(std::string const& method, int const& num_iters,
+    double const& tol, nlohmann::json const& opt_params, std::string const& genFunc, int size)
+    : Reader(method, num_iters, tol, opt_params)
 {
     func = genFunc;
+    input_data.size = size;
 }
 
-PictureReader::PictureReader(std::string const& method, int const& size,
-    int const& num_iters, double const& tol, nlohmann::json const& opt_params,
-    std::string const& img_path)
-    : Reader(method, size, num_iters, tol, opt_params)
+PictureReader::PictureReader(std::string const& method, int const& num_iters,
+    double const& tol, nlohmann::json const& opt_params, std::string const& img_path)
+    : Reader(method, num_iters, tol, opt_params)
 {
     path = img_path;
 }
@@ -60,19 +57,24 @@ void Reader::printMatrix() const
 
 void FileReader::genMatrix()
 {
-    Eigen::MatrixXcd A(input_data.size, input_data.size);
     std::ifstream file(file_path);
     if (!file.is_open()) {
-        std::cerr << "Error opening file: " << file_path << std::endl;
-        A =  Eigen::MatrixXcd();
-        return;
-        // return an empty matrix for now
-        // can look into throwing exception
+        throw std::runtime_error("Error opening file: " + file_path);
     }
-    std::cout << "Opening file: " << file_path << " ..." << std::endl;
+    std::cout << "Opening file: " << file_path << " ..." << std::endl << std::flush;
+
+    input_data.size = 0;
     std::string line;
+    while (std::getline(file, line)) {
+        input_data.size++;
+    }
+
+    file.clear();
+    file.seekg(0);
+
+    Eigen::MatrixXcd A(input_data.size, input_data.size);
     long row = 0;
-    while (std::getline(file, line) && row < input_data.size) {
+    while (std::getline(file, line)) {
         std::stringstream ss(line);
         std::string cell;
         long col = 0;
@@ -80,8 +82,8 @@ void FileReader::genMatrix()
             try {
                 A(row, col) = parseComplex(cell);
             } catch (const std::invalid_argument& e) {
-                std::cerr << "Invalid number at row " << row << ", column " << col << std::endl;
-                A(row, col) = -10e9;
+                std::cerr << "FATAL ERRROR: Invalid number at row " << row << ", column " << col << std::endl << std::flush;
+                std::exit(EXIT_FAILURE);
             }
             col++;
         }
@@ -92,7 +94,7 @@ void FileReader::genMatrix()
     input_data.input_matrix = A;
 }
 
-// parses complex numbers of form a + bi
+// parses complex numbers of form a + ib
 std::complex<double> FileReader::parseComplex(std::string s)
 {
     s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
@@ -102,6 +104,7 @@ std::complex<double> FileReader::parseComplex(std::string s)
     if (delim_pos == std::string::npos) {
         // No imaginary part, parse as a real number
         real = std::stod(s);
+
         return std::complex<double>(real, 0);
     }
 
@@ -119,12 +122,12 @@ std::complex<double> FileReader::parseComplex(std::string s)
         real = 0;
         imm = std::stod(s.substr(0,delim_pos));
     }
-
     return std::complex<double>(real, imm);
 }
 
 void FunctionReader::genMatrix()
 {
+    input_data.size = input_data.method_config;
     Eigen::MatrixXcd A(input_data.size, input_data.size);
     double i, j;
 
@@ -155,11 +158,12 @@ void PictureReader::genMatrix() {
     const char * img_path = path.c_str();
     unsigned char* data = stbi_load(img_path, &height, &width, &channels, 1);
     if (!data) {
-        std::cerr << "Error: Unable to load image at " << img_path << std::endl;
+        throw std::runtime_error("Error opening image: " + path);
     }
     if (height != width) {
-        std::cerr << "Warning: height must be equal to width. Cropping." << std::endl;
+        std::cerr << "WARNING: height must be equal to width. Cropping." << std::endl;
     }
+    std::cout << "Opening image: " << path << std::endl;
     int sz = std::min(height,width);
     Eigen::MatrixXcd A(sz,sz);
     for(int i=0; i<sz; i++) {
@@ -168,5 +172,6 @@ void PictureReader::genMatrix() {
         }
     }
     input_data.input_matrix = A;
+    std::cout << "Successfully loaded picture as matrix." << std::endl;
     stbi_image_free(data);
 }

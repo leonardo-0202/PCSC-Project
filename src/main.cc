@@ -10,15 +10,17 @@ int main(int argc, char **argv)
 {
     Reader * reader;
     try {
-        reader = createReader("./config.json");
+        reader = createReader("../config.json");
     }
     catch (const std::ios_base::failure& e){
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "FATAL ERROR: " << e.what() << std::endl;
+        std::exit(EXIT_FAILURE);
     }
-
+    std::cout << "Successfully created reader." << std::endl;
     Solver * solver = createSolver(reader);
-
+    std::cout << "Successfully created solver." << std::endl;
     solver->solve();
+
     OutputGenerator x = OutputGenerator(solver->getOutput());
     x.saveOutput();
     free(reader);

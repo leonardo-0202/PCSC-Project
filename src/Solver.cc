@@ -58,7 +58,7 @@ void PowerBasedSolver::solve()
         }
     }
     auto end_time = std::chrono::high_resolution_clock::now();
-    output.estimated_eigenvalues[1] = eigenval;
+    output.estimated_eigenvalues(eigenval);
     output.estimated_error = residual.norm();
     output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
     output.iterations = i;
@@ -103,7 +103,8 @@ void QRSolver::solve()
 
     auto start_time = std::chrono::high_resolution_clock::now();
     while (cnt < num_iters && err >= tol) {
-        auto Q = QRDecompQ(A);
+        auto QR = A.householderQr();
+        auto Q = QR.householderQ();
         A = Q.transpose() * A * Q;
         cnt ++;
 

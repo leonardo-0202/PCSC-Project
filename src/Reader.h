@@ -26,12 +26,11 @@ public:
     /**
      * @brief Constructs a Reader object.
      * @param method The method to be used to find the eigenvalues.
-     * @param size The size of the matrix.
      * @param num_iters The maximum number of iterations.
      * @param tol The tolerance level.
      * @param opt_params A JSON object containing additional optional parameters.
      */
-    Reader(std::string const& method, int const& size, int const& num_iters, 
+    Reader(std::string const& method, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params);
     /**
      * @brief Retrieves the input data.
@@ -58,7 +57,7 @@ protected:
      */
     std::string file_path;
 public:
-    FileReader(std::string const& method, int const& size, int const& num_iters,
+    FileReader(std::string const& method, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params, std::string const& path);
     std::complex<double> parseComplex(std::string s);
     void genMatrix();
@@ -69,8 +68,8 @@ class FunctionReader : public Reader
 protected:
     std::string func;
 public:
-    FunctionReader(std::string const& method, int const& size, int const& num_iters,
-        double const& tol, nlohmann::json const& opt_params, std::string const& func);
+    FunctionReader(std::string const& method, int const& num_iters, double const& tol,
+        nlohmann::json const& opt_params, std::string const& func, int size);
     void genMatrix();
 };
 
@@ -79,7 +78,7 @@ class PictureReader : public Reader
 protected:
     std::string path;
 public:
-    PictureReader(std::string const& method, int const& size, int const& num_iters,
+    PictureReader(std::string const& method, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params, std::string const& path);
     void genMatrix();
 };
