@@ -43,6 +43,7 @@ add_executable(main src/main.cc)
 target_link_libraries(main eigenvalues)
 
 add_executable(test_pcsc test/test.cc)
+target_include_directories(test_pcsc PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(test_pcsc gtest_main gtest pthread eigenvalues)
 
 add_custom_target(test ./test_pcsc DEPENDS test_pcsc)
