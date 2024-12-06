@@ -19,14 +19,30 @@ class Solver
         virtual void solve() = 0;
 };
 
-class PowerSolver : public Solver
+class PowerBasedSolver : public Solver
 {
     protected:
-        double shift;
+        Eigen::MatrixXcd shifted_matrix;
+        virtual Eigen::VectorXcd eigenvec_approx(Eigen::VectorXcd const& b) = 0;
+    public:
+        PowerBasedSolver(InputData input); 
+        void solve() override;
+};
+
+class PowerSolver : public PowerBasedSolver
+{
     public:
         PowerSolver(InputData input);
-        std::complex<double> powerMethod(Eigen::VectorXcd &b);
-        void solve();
+        Eigen::VectorXcd eigenvec_approx(Eigen::VectorXcd const& b) override;
+};
+
+class InverseSolver : public PowerBasedSolver
+{
+    protected:
+        Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXcd> decomp;
+    public:
+        InverseSolver(InputData input);
+        Eigen::VectorXcd eigenvec_approx(Eigen::VectorXcd const& b) override;
 };
 
 /**

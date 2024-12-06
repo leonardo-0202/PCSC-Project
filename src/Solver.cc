@@ -13,117 +13,61 @@ Solver::Solver(InputData input)
     A = input.input_matrix;
 }
 
-PowerSolver::PowerSolver(InputData input) : Solver(input)
+PowerBasedSolver::PowerBasedSolver(InputData input) : Solver(input)
 {
-    shift = input.method_config.at("POWER")["SHIFT"];
+    double shift = input.method_config.at("POWER")["SHIFT"];
+    shifted_matrix = A - shift*Eigen::MatrixXcd::Identity(n,n);
 }
 
-InvSolver::InvSolver(InputData input) : Solver(input)
+PowerSolver::PowerSolver(InputData input) : PowerBasedSolver(input) {}
+
+InvSolver::InvSolver(InputData input) : PowerBasedSolver(input)
 {
-    shift = input.method_config.at("INV")["SHIFT"];
+    decomp = shifted_matrix.completeOrthogonalDecomposition();
 }
 
 QRSolver::QRSolver(InputData input) : Solver(input) {}
 
-OutputData Solver::getOutput() {
-    return output;
-}
-
-Eigen::dcomplex PowerSolver::powerMethod(Eigen::VectorXcd &b)
+PowerBasedSolver::solve()
 {
     // Declare eigenvalue
     Eigen::dcomplex eigenval;
-
+    // Get random starting eigenvector
+    Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
+    
     for (int i=0; i<num_iters; i++)
     {
-        // Compute matrix-vector multiplication
-        Eigen::VectorXcd b_tmp = A * b;
-        // Compute the norm
-        auto norm = b_tmp.norm();
-        // Update the eigenvector b
-        b = b_tmp / norm;
-        // Compute the dominant eigenvalue via Rayleigh quotient w/ denominator = 1
-        eigenval = Eigen::dcomplex(b.adjoint() * A * b) 
-                    / Eigen::dcomplex((b.adjoint() * b));
-
-        // Check for convergence
-        if ( (b - b_tmp).norm() < tol) {
-            break;
-        }
-    }
-    return eigenval;
-}
-
-void PowerSolver::solve()
-{
-    // Create container for all eigenvalues
-    Eigen::VectorXcd eigenvals(n);
-    Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
-    // Apply shift to matrix A
-    A -= shift * Eigen::MatrixXcd::Identity(n,n);
-
-    auto a = std::chrono::high_resolution_clock::now();
-    for (int i=0; i<n; i++)
-    {
-        // Get the largest eigenvalue via power method
-        eigenvals(i) = powerMethod(b);
-        // Deflate matrix
-        A -= eigenvals(i) * b * b.adjoint();
-    }
-
-    auto b_end = std::chrono::high_resolution_clock::now();
-    output.estimated_eigenvalues = eigenvals;
-    //output.estimated_error = err;
-    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b_end - a).count();
-    // output.iterations = cnt;
-    output.method = "Power Method";    
-}
-
-void InvSolver::solve()
-{
-    // Create container for all eigenvalues
-    Eigen::VectorXcd eigenvals(n);
-    Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
-    // Apply shift to matrix A
-    A -= shift * Eigen::MatrixXcd::Identity(n,n);
-
-    //auto a = std::chrono::high_resolution_clock::now();
-    for (int i=0; i<n; i++)
-    {
-        // Get the largest eigenvalue via power method
-        eigenvals(i) = invPowerMethod(b);
-        // Deflate matrix
-        A -= eigenvals(i) * b * b.adjoint();
-    }
-
-    std::cout << eigenvals << std::endl;
-}
-
-Eigen::dcomplex InvSolver::invPowerMethod(Eigen::VectorXcd &b)
-{
-    // Declare eigenvalue
-    Eigen::dcomplex eigenval;
-    // Matrix decomposition
-    auto decomp = A.completeOrthogonalDecomposition();
-    for (int i=0; i<num_iters; i++)
-    {
-        Eigen::VectorXcd b_tmp(n);
         // Approximation of eigenvector
-        b_tmp = decomp.solve(b);
+        Eigen::VectorXcd b_tmp = eigenvec_approx(b);
         // Compute the norm
         auto norm = b_tmp.norm();
         // Update the eigenvector b
         b = b_tmp / norm;
-        // Compute the dominant eigenvalue via Rayleigh quotient
+        // Compute the eigenvalue via Rayleigh quotient
         eigenval = Eigen::dcomplex(b.adjoint() * A * b) 
                         / Eigen::dcomplex(b.adjoint() * b);
 
         // Check for convergence
-        if ( (b - b_tmp).norm() < tol) {
+        Eigen::VectorXcd res = A*b - eigenval*b;
+        if (res.norm() < tol) {
             break;
         }
     }
-    return eigenval;   
+    std::cout << eigenval << std::endl;  
+}
+
+PowerSolver::eigenvec_approx(Eigen::VectorXcd const& b)
+{
+    return shifted_matrix*b;
+}
+
+InvSolver::eigenvec_approx(Eigen::VectorXcd const& b)
+{
+    return decomp.solve(b);
+}
+
+OutputData Solver::getOutput() {
+    return output;
 }
 
 Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)

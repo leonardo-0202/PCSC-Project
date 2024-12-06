@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 {
     Reader * reader;
     try {
-        reader = createReader("..\\config.json");
+        reader = createReader("./config.json");
     }
     catch (const std::ios_base::failure& e){
         std::cerr << "Error: " << e.what() << std::endl;
