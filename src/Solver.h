@@ -13,6 +13,7 @@ class Solver
         double tol;
         Eigen::MatrixXcd A;
         OutputData output;
+        std::string method_name;
     public:
         Solver(InputData input);
         OutputData getOutput();
@@ -65,16 +66,6 @@ class QRSolver : public Solver
         /**
         * @brief Solves for the eigenvalues using the QR method.
         */
-        void solve();
-};
-
-class InvSolver : public Solver
-{
-    protected:
-        double shift;
-    public:
-        InvSolver(InputData input);
-        std::complex<double> invPowerMethod(Eigen::VectorXcd &b);
         void solve();
 };
 

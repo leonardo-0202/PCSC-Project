@@ -11,31 +11,35 @@ Solver::Solver(InputData input)
     num_iters = input.num_iters;
     tol = input.tol;
     A = input.input_matrix;
+    method_name = input.method;
 }
 
 PowerBasedSolver::PowerBasedSolver(InputData input) : Solver(input)
 {
-    double shift = input.method_config.at("POWER")["SHIFT"];
+    double shift = input.method_config.at("SHIFT");
     shifted_matrix = A - shift*Eigen::MatrixXcd::Identity(n,n);
 }
 
 PowerSolver::PowerSolver(InputData input) : PowerBasedSolver(input) {}
 
-InvSolver::InvSolver(InputData input) : PowerBasedSolver(input)
+InverseSolver::InverseSolver(InputData input) : PowerBasedSolver(input)
 {
     decomp = shifted_matrix.completeOrthogonalDecomposition();
 }
 
 QRSolver::QRSolver(InputData input) : Solver(input) {}
 
-PowerBasedSolver::solve()
+void PowerBasedSolver::solve()
 {
-    // Declare eigenvalue
+    // Declare eigenvalue and error
     Eigen::dcomplex eigenval;
+    Eigen::VectorXcd residual;
     // Get random starting eigenvector
     Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
     
-    for (int i=0; i<num_iters; i++)
+    auto a = std::chrono::high_resolution_clock::now();
+    int i = 0;
+    for (i; i<num_iters; i++)
     {
         // Approximation of eigenvector
         Eigen::VectorXcd b_tmp = eigenvec_approx(b);
@@ -48,26 +52,27 @@ PowerBasedSolver::solve()
                         / Eigen::dcomplex(b.adjoint() * b);
 
         // Check for convergence
-        Eigen::VectorXcd res = A*b - eigenval*b;
-        if (res.norm() < tol) {
+        residual = A*b - eigenval*b;
+        if (residual.norm() < tol) {
             break;
         }
     }
-    std::cout << eigenval << std::endl;  
+    auto b = std::chrono::high_resolution_clock::now();
+    output.estimated_eigenvalues[1] = eigenval;
+    output.estimated_error = residual;
+    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+    output.iterations = i;
+    output.method = method_name;
 }
 
-PowerSolver::eigenvec_approx(Eigen::VectorXcd const& b)
+Eigen::VectorXcd PowerSolver::eigenvec_approx(Eigen::VectorXcd const& b)
 {
     return shifted_matrix*b;
 }
 
-InvSolver::eigenvec_approx(Eigen::VectorXcd const& b)
+Eigen::VectorXcd InverseSolver::eigenvec_approx(Eigen::VectorXcd const& b)
 {
     return decomp.solve(b);
-}
-
-OutputData Solver::getOutput() {
-    return output;
 }
 
 Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)
@@ -115,4 +120,8 @@ void QRSolver::solve()
     output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
     output.iterations = cnt;
     output.method = "QR Method";
+}
+
+OutputData Solver::getOutput() {
+    return output;
 }
