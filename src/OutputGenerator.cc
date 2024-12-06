@@ -22,7 +22,8 @@ std::string OutputGenerator::writeToHTML(const Eigen::VectorXcd & vec) {
 void OutputGenerator::writeToCSV(const Eigen::VectorXcd & vec, std::string out_path) {
     std::ofstream out_file(out_path, std::ios::out);
     if (!out_file) {
-        std::cerr << "Error: Could not open the file for writing.\n";
+        std::cerr << "WARNING: Could not open the file for writing eigenvalues. Printing to terminal instead." << std::endl;
+        std::cout << vec << std::endl;
         return;
     }
     for (int i = 0; i < vec.size(); ++i) {
@@ -35,10 +36,20 @@ void OutputGenerator::saveOutput() {
     std::cout << "Saving output file..." << std::endl;
 
     std::ofstream htmlFile("../output.html");
-    std::string output_path = "../outpt.csv";
+    std::string output_path = "../output.csv";
+
+    if (!htmlFile) {
+        std::cerr << "WARNING: Could not open the file for writing metrics. Printing to terminal instead." << std::endl;
+        std::cout << "Method: " + out.method << std::endl;
+        std::cout << "Error: " + std::to_string(out.estimated_error) << std::endl;
+        std::cout << "Execution Time: " + std::to_string(out.execution_time) + " microseconds" << std::endl;
+        std::cout << "Iterations: " + std::to_string(out.iterations) << std::endl;
+        return;
+    }
 
     writeToCSV(out.estimated_eigenvalues, output_path);
-    std::cout << "CSV output saved to output.csv" << std::endl;
+    std::cout << "Eigenvalue output saved to output.csv" << std::endl;
+    
     htmlFile << R"(
 <!DOCTYPE html>
 <html lang="en">
@@ -110,5 +121,5 @@ void OutputGenerator::saveOutput() {
 )";
 
     htmlFile.close();
-    std::cout << "HTML output saved to output.html" << std::endl;
+    std::cout << "Solver metrics output saved to output.html" << std::endl;
 }
