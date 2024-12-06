@@ -37,7 +37,7 @@ void PowerBasedSolver::solve()
     // Get random starting eigenvector
     Eigen::VectorXcd b = Eigen::VectorXcd::Random(n);
     
-    auto a = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
     int i = 0;
     for (i; i<num_iters; i++)
     {
@@ -57,10 +57,10 @@ void PowerBasedSolver::solve()
             break;
         }
     }
-    auto b = std::chrono::high_resolution_clock::now();
+    auto end_time = std::chrono::high_resolution_clock::now();
     output.estimated_eigenvalues[1] = eigenval;
-    output.estimated_error = residual;
-    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+    output.estimated_error = residual.norm();
+    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
     output.iterations = i;
     output.method = method_name;
 }
@@ -101,7 +101,7 @@ void QRSolver::solve()
     int cnt = 0;
     double err = tol + 1;
 
-    auto a = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
     while (cnt < num_iters && err >= tol) {
         auto Q = QRDecompQ(A);
         A = Q.transpose() * A * Q;
@@ -114,10 +114,10 @@ void QRSolver::solve()
         }
         err = sqrt(err);
     }
-    auto b = std::chrono::high_resolution_clock::now();
+    auto end_time = std::chrono::high_resolution_clock::now();
     output.estimated_eigenvalues = A.diagonal();
     output.estimated_error = err;
-    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(b - a).count();
+    output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
     output.iterations = cnt;
     output.method = "QR Method";
 }
