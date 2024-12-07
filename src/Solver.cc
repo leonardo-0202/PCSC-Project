@@ -5,6 +5,17 @@
 #include "InputData.h"
 #include "Solver.h"
 
+/**
+ * @file Solver.cc
+ * @brief Implementation file for all Solver based classes.
+ */
+
+/**
+ * @brief Solver constructor to initialize the problem parameters.
+ * 
+ * Initializes the base class attributes using the provided input data.
+ * @param input The input data of the problem to initialize protected attributes.
+ */
 Solver::Solver(InputData input) 
 {
     n = input.size;
@@ -14,21 +25,52 @@ Solver::Solver(InputData input)
     method_name = input.method;
 }
 
+/**
+ * @brief PowerBasedSolver constructor to initialize solver specific attributes.
+ * 
+ * Initializes the shifted matrix by applying the shift value to the input matrix.
+ * @param input The input data of the problem contained in InputData struct.
+ */
 PowerBasedSolver::PowerBasedSolver(InputData input) : Solver(input)
 {
     double shift = input.method_config.at("SHIFT");
     shifted_matrix = A - shift*Eigen::MatrixXcd::Identity(n,n);
 }
 
+/**
+ * @brief PowerSolver constructor. Inherits from PowerBasedSolver.
+ * 
+ * Initializes the power method solver using the provided input data.
+ * @param input The input data of the problem contained in InputData struct.
+ */
 PowerSolver::PowerSolver(InputData input) : PowerBasedSolver(input) {}
 
+/**
+ * @brief InverseSolver constructor. Inherits from PowerBasedSolver.
+ * 
+ * Initializes the inverse power method solver and performs matrix decomposition.
+ * @param input The input data of the problem contained in InputData struct.
+ */
 InverseSolver::InverseSolver(InputData input) : PowerBasedSolver(input)
 {
     decomp = shifted_matrix.completeOrthogonalDecomposition();
 }
 
+/**
+ * @brief QRSolver constructor to initialize the QR method solver.
+ * 
+ * Initializes the QR-based solver with the given input data.
+ * @param input The input data of the problem contained in InputData struct.
+ */
 QRSolver::QRSolver(InputData input) : Solver(input) {}
 
+/**
+ * @brief Solves the eigenvalue problem using a power-based method.
+ * 
+ * Iterates for a maximum number of iterations to approximate the eigenvector
+ * and calculate the eigenvalue using the Rayleigh quotient. Convergence is
+ * measured based on the residual norm.
+ */
 void PowerBasedSolver::solve()
 {
     // Declare eigenvalue and error
@@ -65,16 +107,31 @@ void PowerBasedSolver::solve()
     output.method = method_name;
 }
 
+/**
+ * @brief Performs eigenvector approximation for the power method.
+ * 
+ * Multiplies the shifted matrix with the current eigenvector approximation.
+ * @param b Current approximation of the eigenvector. Passed to the method as a const reference to 'Eigen::VectorXcd'.
+ * @return Eigen::VectorXcd representing a step in approximating the eigenvector before normalization.
+ */
 Eigen::VectorXcd PowerSolver::eigenvec_approx(Eigen::VectorXcd const& b)
 {
     return shifted_matrix*b;
 }
 
+/**
+ * @brief Performs eigenvector approximation for the inverse power method.
+ * 
+ * Uses matrix decomposition to solve the system and approximate the eigenvector.
+ * @param b Current approximation of the eigenvector. Passed to the method as a const reference to 'Eigen::VectorXcd'.
+ * @return Eigen::VectorXcd representing a step in approximating the eigenvector before normalization.
+ */
 Eigen::VectorXcd InverseSolver::eigenvec_approx(Eigen::VectorXcd const& b)
 {
     return decomp.solve(b);
 }
 
+// REMOVE EVENTUALLY
 Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)
 {
     Eigen::MatrixXcd Q = Eigen::MatrixXd::Identity(n,n);
@@ -96,6 +153,11 @@ Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)
     return Q;
 }
 
+/**
+ * @brief Find all eigenvalues using the QR method.
+ * 
+ * Iteratively applies the QR algorithm to compute the eigenvalues of the matrix.
+ */
 void QRSolver::solve()
 {
     int cnt = 0;
@@ -123,6 +185,12 @@ void QRSolver::solve()
     output.method = "QR Method";
 }
 
+/**
+ * @brief Returns the output data collected during the solving process.
+ * 
+ * Provides the estimated eigenvalues, error, execution time, iterations, and method used.
+ * @return OutputData struct containing the results.
+ */
 OutputData Solver::getOutput() {
     return output;
 }
