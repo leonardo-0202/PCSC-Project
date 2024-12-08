@@ -90,7 +90,7 @@ void FileReader::genMatrix()
         row++;
     }
     file.close();
-    
+
     input_data.input_matrix = A;
 }
 

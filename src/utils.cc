@@ -8,14 +8,13 @@
 #include "Solver.h"
 using json = nlohmann::json;
 
-Reader* createReader(std::string const& config_path)
+Reader* createReader(std::filesystem::path file_path)
 {
     // Open input stream object and check existence
-    std::cout << "Opening file ... " << config_path << std::endl << std::flush;
-    std::filesystem::path file_path = config_path;
+    std::cout << "Opening file ... " << std::filesystem::absolute(file_path) << std::endl << std::flush;
     std::ifstream config_file(file_path);
     if (!config_file.is_open()) {
-        throw std::ios_base::failure("Failed to open config. file: " + config_path);
+        throw std::ios_base::failure("Failed to open config. file." );
     }
 
     // Create json object
@@ -24,6 +23,7 @@ Reader* createReader(std::string const& config_path)
     
     // Extract run configuration
 
+    // METTERE CHE SE L'UTENTE CANCELLA LA LINEA FUNZIONA COMUNQUE
     std::string data_type = data.at("INPUT");
     std::string method = data.at("METHOD");
     int max_iters = data.at("MAX_ITERS");

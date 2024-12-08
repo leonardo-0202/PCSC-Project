@@ -4,7 +4,7 @@
 #include "Reader.h"
 #include "Solver.h"
 
-Reader * createReader(std::string const& config_path);
+Reader * createReader(std::filesystem::path config_path);
 Solver * createSolver(Reader * reader);
 
 #endif //UTILS_H

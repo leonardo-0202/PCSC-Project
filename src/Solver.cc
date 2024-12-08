@@ -131,28 +131,6 @@ Eigen::VectorXcd InverseSolver::eigenvec_approx(Eigen::VectorXcd const& b)
     return decomp.solve(b);
 }
 
-// REMOVE EVENTUALLY
-Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)
-{
-    Eigen::MatrixXcd Q = Eigen::MatrixXd::Identity(n,n);
-    Eigen::MatrixXcd R = A;
-    for (int j=0; j<n; j++) {
-        Eigen::VectorXcd x = R.block(j, j, n - j, 1);
-        Eigen::VectorXcd e = Eigen::VectorXcd::Zero(n - j);
-        e(0) = std::complex<double>(x.norm(), 0);
-        Eigen::VectorXcd v = x - e;
-        v.normalize();
-
-        Eigen::MatrixXcd H = Eigen::MatrixXcd::Identity(n, n);
-        Eigen::MatrixXcd H_sub = Eigen::MatrixXcd::Identity(n - j, n - j) - 2.0 * (v * v.adjoint());
-        H.block(j, j, n - j, n - j) = H_sub;
-
-        Q = Q * H;
-        R = H * R;
-    }
-    return Q;
-}
-
 /**
  * @brief Find all eigenvalues using the QR method.
  * 
