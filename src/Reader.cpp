@@ -65,8 +65,22 @@ void FileReader::genMatrix()
 
     input_data.size = 0;
     std::string line;
+    int expected_columns = 0;
+
+    // Count number of rows and columns (in the first row)
     while (std::getline(file, line)) {
+        if (input_data.size == 0) {
+            std::stringstream ss(line);
+            std::string cell;
+            while (std::getline(ss, cell, ',')) {
+                expected_columns++;
+            }
+        }
         input_data.size++;
+    }
+
+    if (input_data.size != expected_columns) {
+        throw std::runtime_error("The matrix is not square. Rows: " + std::to_string(input_data.size) + ", Columns: " + std::to_string(expected_columns));
     }
 
     file.clear();
@@ -87,6 +101,12 @@ void FileReader::genMatrix()
             }
             col++;
         }
+
+        // check for column mismatch
+        if (col != input_data.size) {
+            throw std::runtime_error("Row " + std::to_string(row) + " does not have " + std::to_string(input_data.size) + " columns.");
+        }
+
         row++;
     }
     file.close();

@@ -69,3 +69,14 @@ TEST(createReader, InvalidFilePath) {
         std::ios_base::failure
     );
 }
+
+// Test 6: Non-square matrix
+TEST(createReader, RectangularMatrix) {
+    // Expect the createReader function to throw an exception when given an invalid csv path
+    EXPECT_THROW(
+        {
+            createReader("../test/ReadersTests/RectangularMatrix.json");
+        },
+        std::ios_base::failure
+    );
+}
