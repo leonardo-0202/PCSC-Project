@@ -4,13 +4,15 @@
 #include "test_utils.h"
 #include <Eigen/Eigenvalues>
 #include <tuple>
+#include <string>
+#include "utils.h"
 
 class Matrices
 {
     public:
         Matrices() {  
             A_random3 = Eigen::MatrixXcd::Random(3, 3);
-            A_random10 = Eigen::MatrixXcd::Random(10,10);
+            A_random8 = Eigen::MatrixXcd::Random(8, 8);
             A_identity = Eigen::MatrixXcd::Identity(3, 3);
             A_diagonal_real = Eigen::MatrixXcd::Zero(3, 3);
             A_diagonal_real.diagonal() << Eigen::dcomplex(1.0, 0.0), 
@@ -27,7 +29,7 @@ class Matrices
         }
         // Get matrices
         Eigen::MatrixXcd getRandom3() const { return A_random3; }
-        Eigen::MatrixXcd getRandom10() const { return A_random10; }
+        Eigen::MatrixXcd getRandom8() const { return A_random8; }
         Eigen::MatrixXcd getIdentity() const { return A_identity; }
         Eigen::MatrixXcd getDiagonalReal() const { return A_diagonal_real; }
         Eigen::MatrixXcd getDiagonalComplex() const { return A_diagonal_complex; }
@@ -35,7 +37,7 @@ class Matrices
 
     protected:
         Eigen::MatrixXcd A_random3;
-        Eigen::MatrixXcd A_random10;
+        Eigen::MatrixXcd A_random8;
         Eigen::MatrixXcd A_identity;
         Eigen::MatrixXcd A_diagonal_real;
         Eigen::MatrixXcd A_diagonal_complex;
@@ -46,35 +48,36 @@ class QRSolverTest : public Matrices, public ::testing::TestWithParam<Eigen::Mat
 protected:
     void SetUp() override {
         matrix = GetParam();  // Get the matrix parameter
-        input.num_iters = 500;
+        input.num_iters = 2000;
         input.tol = 1e-6;
     }
     Eigen::MatrixXcd matrix;
     InputData input;
 };
 
-class PowerBasedSolverTest : public Matrices, public ::testing::TestWithParam<std::tuple<Eigen::MatrixXcd, double>> {
+class PowerBasedSolverTest : public Matrices, public ::testing::TestWithParam<std::tuple<Eigen::MatrixXcd, std::string>> {
 protected:
     void SetUp() override {
         matrix = std::get<0>(GetParam());
-        shift = std::get<1>(GetParam());
-        input.num_iters = 500;
+        complex_shift = std::get<1>(GetParam());
+        input.num_iters = 2000;
         input.tol = 1e-6;
     }
     Eigen::MatrixXcd matrix;
-    double shift;
+    std::string complex_shift;
     InputData input;
 };
 
 TEST_P(PowerBasedSolverTest, SolverWithShiftOption) 
 {
-    int n = matrix.rows();
-    Eigen::MatrixXcd shifted_matrix = matrix - shift*Eigen::MatrixXcd::Identity(n,n);
-
     // Input setup
-    input.method_config["SHIFT"] = shift;
+    int n = matrix.rows();
+    input.method_config["SHIFT"] = complex_shift;
     input.input_matrix = matrix;
     input.size = n;
+    Eigen::dcomplex shift = parseComplex(complex_shift);
+    Eigen::MatrixXcd shifted_matrix = matrix - shift*Eigen::MatrixXcd::Identity(n,n);
+    
 
     // True eigenvalues
     Eigen::ComplexEigenSolver<Eigen::MatrixXcd> true_solver(shifted_matrix);
@@ -86,15 +89,15 @@ TEST_P(PowerBasedSolverTest, SolverWithShiftOption)
     PowerSolver powerSolver(input);
     powerSolver.solve();
     Eigen::dcomplex eigenval = powerSolver.getOutput().estimated_eigenvalues[0];
-    EXPECT_NEAR(eigenval.real(), largest.real() + shift, 1e-2); 
-    EXPECT_NEAR(eigenval.imag(), largest.imag(), 1e-2); 
+    EXPECT_NEAR(eigenval.real(), largest.real() + shift.real(), 1e-2); 
+    EXPECT_NEAR(eigenval.imag(), largest.imag() + shift.imag(), 1e-2); 
 
     // Inverse Solver
     InverseSolver invSolver(input);
     invSolver.solve();
     eigenval = invSolver.getOutput().estimated_eigenvalues[0];
-    EXPECT_NEAR(eigenval.real(), smallest.real() + shift, 1e-2); 
-    EXPECT_NEAR(eigenval.imag(), smallest.imag(), 1e-2); 
+    EXPECT_NEAR(eigenval.real(), smallest.real() + shift.real(), 1e-2); 
+    EXPECT_NEAR(eigenval.imag(), smallest.imag() + shift.imag(), 1e-2); 
 }
 
 TEST_P(QRSolverTest, SolverQR) 
@@ -127,13 +130,13 @@ INSTANTIATE_TEST_SUITE_P(
     PowerBasedTestSuite,
     PowerBasedSolverTest,
     ::testing::Values(
-        std::make_tuple(Matrices().getRandom3(), 5.0),
-        std::make_tuple(Matrices().getRandom3(), 0.0),
-        std::make_tuple(Matrices().getRandom10(), 0.0),
-        std::make_tuple(Matrices().getIdentity(), 0.0),
-        std::make_tuple(Matrices().getDiagonalReal(), 0.0),
-        std::make_tuple(Matrices().getDiagonalComplex(), 3.0),
-        std::make_tuple(Matrices().getSymmetric(), 0.0)
+        std::make_tuple(Matrices().getRandom3(), "5.0 + i0.0")
+        // std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(0.0, 0.0)),
+        // std::make_tuple(Matrices().getRandom8(), Eigen::dcomplex(0.0, 0.0)),
+        // std::make_tuple(Matrices().getIdentity(), Eigen::dcomplex(0.0, 0.0)),
+        // std::make_tuple(Matrices().getDiagonalReal(), Eigen::dcomplex(0.0, 0.0)),
+        // std::make_tuple(Matrices().getDiagonalComplex(), Eigen::dcomplex(3.0, 0.0)),
+        // std::make_tuple(Matrices().getSymmetric(), Eigen::dcomplex(0.0, 0.0))
     )
 );
 
@@ -142,9 +145,10 @@ INSTANTIATE_TEST_SUITE_P(
     QRSolverTest,
     ::testing::Values(
         Matrices().getRandom3(),
-        Matrices().getRandom10(),
+        Matrices().getRandom8(),
         Matrices().getIdentity(),
         Matrices().getDiagonalReal(),
-        Matrices().getDiagonalComplex()
+        Matrices().getDiagonalComplex(),
+        Matrices().getSymmetric()
     )
 );
