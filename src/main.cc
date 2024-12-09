@@ -30,6 +30,8 @@ int main(int argc, char **argv)
 
     OutputGenerator x = OutputGenerator(solver->getOutput());
     x.saveOutput();
+
+    // Fare destructor giusto
     free(reader);
     free(solver);
     // Solver solver(data_reader.getInputData());

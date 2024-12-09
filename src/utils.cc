@@ -23,18 +23,50 @@ Reader* createReader(std::filesystem::path file_path)
     
     // Extract run configuration
 
-    // METTERE CHE SE L'UTENTE CANCELLA LA LINEA FUNZIONA COMUNQUE
-    std::string data_type = data.at("INPUT");
+    std::string data_type;
+    try {
+        data_type = data.at("INPUT");
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr <<"FATAL ERROR: Missing input data type." << std::endl << std::flush;
+        std::exit(EXIT_FAILURE);
+    }
+
     std::string method = data.at("METHOD");
-    int max_iters = data.at("MAX_ITERS");
-    double tol = data.at("TOLERANCE");
+    try {
+        method = data.at("METHOD");
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr <<"WARNING: Missing solver method. Defauting to QR method." << std::endl << std::flush;
+        method = "QR";
+    }
+
+    int max_iters;
+    try {
+        max_iters=  data.at("MAX_ITERS");
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr <<"WARNING: Missing max. num. of iterations. Defauting to 1000." << std::endl << std::flush;
+        max_iters = 1000;
+    }
+
+    double tol;
+    try {
+        tol=  data.at("TOLERANCE");
+    }
+    catch (const std::out_of_range& e) {
+        std::cerr <<"WARNING: Missing tolerance. Defauting to 1e-9." << std::endl << std::flush;
+        tol = 1e-9;
+    }
+
     json opt_params = data.at(method);
 
     // Exception when valid option not given
     if (data_type != "FILE" && data_type != "FUNCTION"
         && data_type != "PICTURE") {
-        throw std::ios_base::failure("Unsupported data type.");
-    }
+        throw std::ios_base::failure("Unsupported data type. Input data needs to be either a file, a picture. or a function");
+        std::exit(EXIT_FAILURE);
+        }
     if (method != "QR" && method != "POWER"
         && method != "INV") {
         std::cerr <<"WARNING: Unsupported solver method. Defaulting to QR method." << std::endl << std::flush;
@@ -99,4 +131,35 @@ Solver* createSolver(Reader * reader)
         solver = new InverseSolver(reader->getInputData());
     }
     return solver;
+}
+
+// parses complex numbers of form a + ib
+std::complex<double> parseComplex(std::string s)
+{
+    s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
+    int delim_pos = s.find('i');
+    double real, imm;
+
+    if (delim_pos == std::string::npos) {
+        // No imaginary part, parse as a real number
+        real = std::stod(s);
+
+        return std::complex<double>(real, 0);
+    }
+
+    int plus_pos = s.find_last_of('+');
+    int min_pos = s.find_last_of('-');
+    if (plus_pos != std::string::npos){
+        real = std::stod(s.substr(0,plus_pos));
+        imm = std::stod(s.substr(plus_pos, delim_pos-1));
+    }
+    else if (min_pos != std::string::npos && min_pos > 0) {
+        real = std::stod(s.substr(0, min_pos));
+        imm = std::stod(s.substr(min_pos, delim_pos-1));
+    }
+    else {
+        real = 0;
+        imm = std::stod(s.substr(0,delim_pos));
+    }
+    return std::complex<double>(real, imm);
 }

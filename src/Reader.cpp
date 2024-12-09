@@ -6,6 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
 //#include <exprtk/exprtk.hpp>
+#include "utils.h"
 #include "InputData.h"
 #include "Reader.h"
 
@@ -112,37 +113,6 @@ void FileReader::genMatrix()
     file.close();
 
     input_data.input_matrix = A;
-}
-
-// parses complex numbers of form a + ib
-std::complex<double> FileReader::parseComplex(std::string s)
-{
-    s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
-    int delim_pos = s.find('i');
-    double real, imm;
-
-    if (delim_pos == std::string::npos) {
-        // No imaginary part, parse as a real number
-        real = std::stod(s);
-
-        return std::complex<double>(real, 0);
-    }
-
-    int plus_pos = s.find_last_of('+');
-    int min_pos = s.find_last_of('-');
-    if (plus_pos != std::string::npos){
-        real = std::stod(s.substr(0,plus_pos));
-        imm = std::stod(s.substr(plus_pos, delim_pos-1));
-    }
-    else if (min_pos != std::string::npos && min_pos > 0) {
-        real = std::stod(s.substr(0, min_pos));
-        imm = std::stod(s.substr(min_pos, delim_pos-1));
-    }
-    else {
-        real = 0;
-        imm = std::stod(s.substr(0,delim_pos));
-    }
-    return std::complex<double>(real, imm);
 }
 
 void FunctionReader::genMatrix()

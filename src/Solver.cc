@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 #include "InputData.h"
 #include "Solver.h"
+#include "utils.h"
 
 /**
  * @file Solver.cc
@@ -33,7 +34,7 @@ Solver::Solver(InputData input)
  */
 PowerBasedSolver::PowerBasedSolver(InputData input) : Solver(input)
 {
-    double shift = input.method_config.at("SHIFT");
+    std::complex<double> shift = parseComplex(input.method_config.at("SHIFT"));
     shifted_matrix = A - shift*Eigen::MatrixXcd::Identity(n,n);
 }
 

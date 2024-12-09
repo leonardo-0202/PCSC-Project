@@ -59,7 +59,6 @@ protected:
 public:
     FileReader(std::string const& method, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params, std::string const& path);
-    std::complex<double> parseComplex(std::string s);
     void genMatrix();
 };
 
