@@ -32,7 +32,7 @@ class Solver
         Solver(InputData input);
         /**
          * @brief Method to get OutputData struct
-         * @return OutputData struct
+         * @return Struct containing information about a solver's run
          */
         OutputData getOutput();
         /**

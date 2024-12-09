@@ -11,6 +11,17 @@
 #include "Reader.h"
 #include "Exceptions.h"
 
+/** @file Reader.cpp
+ * @brief Implementation file for Reader based classes.
+ */
+
+/**
+ * @brief Base constructor for the abstract Reader object.
+ * @param method The method to be used to find the eigenvalues.
+ * @param num_iters The maximum number of iterations.
+ * @param tol The tolerance level.
+ * @param opt_params A JSON object containing additional optional parameters.
+ */
 Reader::Reader(std::string const& method, int const& num_iters,
     double const& tol, nlohmann::json const& opt_params)
 {
@@ -20,6 +31,14 @@ Reader::Reader(std::string const& method, int const& num_iters,
     input_data.method_config = opt_params;
 }
 
+/**
+ * @brief Constructor for FileReader
+ * @param method The method to be used to find the eigenvalues.
+ * @param num_iters The maximum number of iterations.
+ * @param tol The tolerance level.
+ * @param opt_params A JSON object containing additional optional parameters.
+ * @param path A path for a file containing the input matrix.
+ */
 FileReader::FileReader(std::string const& method, int const& num_iters, double const& tol,
     nlohmann::json const& opt_params, std::string const& path)
     : Reader(method, num_iters, tol, opt_params)
@@ -27,6 +46,15 @@ FileReader::FileReader(std::string const& method, int const& num_iters, double c
     file_path = path;
 }
 
+/**
+ * @brief Constructor for FunctionReader
+ * @param method The method to be used to find the eigenvalues.
+ * @param num_iters The maximum number of iterations.
+ * @param tol The tolerance level.
+ * @param opt_params A JSON object containing additional optional parameters.
+ * @param func The function defining the input matrix.
+ * @param size The size of the matrix desired.
+ */
 FunctionReader::FunctionReader(std::string const& method, int const& num_iters,
     double const& tol, nlohmann::json const& opt_params, std::string const& genFunc, int size)
     : Reader(method, num_iters, tol, opt_params)
@@ -35,6 +63,14 @@ FunctionReader::FunctionReader(std::string const& method, int const& num_iters,
     input_data.size = size;
 }
 
+/**
+ * @brief Constructor for PictureReader
+ * @param method The method to be used to find the eigenvalues.
+ * @param num_iters The maximum number of iterations.
+ * @param tol The tolerance level.
+ * @param opt_params A JSON object containing additional optional parameters.
+ * @param path A file path for the input image.
+ */
 PictureReader::PictureReader(std::string const& method, int const& num_iters,
     double const& tol, nlohmann::json const& opt_params, std::string const& img_path)
     : Reader(method, num_iters, tol, opt_params)
@@ -42,11 +78,16 @@ PictureReader::PictureReader(std::string const& method, int const& num_iters,
     path = img_path;
 }
 
+/**
+ * @brief Method to retrieve the input data.
+ * @return An InputData object containing the matrix and related parameters.
+ */
 InputData Reader::getInputData() const
 {
     return input_data;
 }
 
+/// Display the input matrix in the terminal.
 void Reader::printMatrix() const
 {
     for(int i=0; i<input_data.size; i++) {
@@ -57,6 +98,7 @@ void Reader::printMatrix() const
     }
 }
 
+/// Implemented method for FileReader to generate an Eigen::MatrixXcd object
 void FileReader::genMatrix()
 {
     std::ifstream file(file_path);
@@ -115,7 +157,7 @@ void FileReader::genMatrix()
 
     input_data.input_matrix = A;
 }
-
+/// Implemented method for FunctionReader to generate an Eigen::MatrixXcd object
 void FunctionReader::genMatrix()
 {
     input_data.size = input_data.method_config;
@@ -144,6 +186,7 @@ void FunctionReader::genMatrix()
     input_data.input_matrix = A;
 }
 
+/// Implemented method for PictureReader to generate an Eigen::MatrixXcd object
 void PictureReader::genMatrix() {
     int height, width, channels;
     const char * img_path = path.c_str();

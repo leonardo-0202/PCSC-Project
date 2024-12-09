@@ -4,8 +4,25 @@
 #include "Eigen/Dense"
 #include "OutputGenerator.h"
 
+/** @file OutputGenerator.cc
+ * @brief Implementation file for the class handling output data
+ */
+
+/**
+ * @brief OutputGenerator constructor
+ * @param output OutputData struct containing the solver's outputs
+ * 
+ * Initialize OutputData class member with OutputData constructed from solver.
+ */
 OutputGenerator::OutputGenerator(OutputData output) : out(output) {}
 
+/**
+ * @brief Function to write data in html format
+ * @param vec Eigen::VectorXcd const& containing the eigenvalues from the solver
+ * @return std::string containing the html structure
+ * 
+ * Creates an HTML formatted string for displaying eigenvalues.
+ */
 std::string OutputGenerator::writeToHTML(const Eigen::VectorXcd & vec) {
     std::string html = "<p style=\"text-align: center;\">";
     for (int i = 0; i < vec.size(); ++i) {
@@ -19,6 +36,12 @@ std::string OutputGenerator::writeToHTML(const Eigen::VectorXcd & vec) {
     return html;
 }
 
+/**
+ * @brief Function to write eigenvalues to a CSV file
+ * @param vec Eigen::VectorXcd const& containing the eigenvalues from the solver
+ * @param out_path std::string containing the output file path
+ * @return void: Write to a CSV file
+ */
 void OutputGenerator::writeToCSV(const Eigen::VectorXcd & vec, std::string out_path) {
     std::ofstream out_file(out_path, std::ios::out);
     if (!out_file) {
@@ -32,6 +55,12 @@ void OutputGenerator::writeToCSV(const Eigen::VectorXcd & vec, std::string out_p
     out_file.close();
 }
 
+/**
+ * @brief Function to save the output of our solver code
+ * @return void
+ * 
+ * Write eigenvalues to a CSV file and solver metrics to an HTML file.
+ */
 void OutputGenerator::saveOutput() {
     std::cout << "Saving output file..." << std::endl;
 

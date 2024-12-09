@@ -5,6 +5,10 @@
 #include <string>
 #include <nlohmann/json.hpp>
 
+/**
+ * @struct InputData
+ * @brief Container for the input in a solver.
+ */
 struct InputData
 {
     std::string method;
