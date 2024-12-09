@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "InputData.h"
 #include "Reader.h"
+#include "Exceptions.h"
 
 Reader::Reader(std::string const& method, int const& num_iters,
     double const& tol, nlohmann::json const& opt_params)
@@ -60,7 +61,7 @@ void FileReader::genMatrix()
 {
     std::ifstream file(file_path);
     if (!file.is_open()) {
-        throw std::runtime_error("Error opening file: " + file_path);
+        throw ReaderError("Error opening file: " + file_path);
     }
     std::cout << "Opening file: " << file_path << " ..." << std::endl << std::flush;
 
@@ -81,7 +82,7 @@ void FileReader::genMatrix()
     }
 
     if (input_data.size != expected_columns) {
-        throw std::runtime_error("The matrix is not square. Rows: " + std::to_string(input_data.size) + ", Columns: " + std::to_string(expected_columns));
+        throw ReaderError("The matrix is not square. Rows: " + std::to_string(input_data.size) + ", Columns: " + std::to_string(expected_columns));
     }
 
     file.clear();
@@ -105,7 +106,7 @@ void FileReader::genMatrix()
 
         // check for column mismatch
         if (col != input_data.size) {
-            throw std::runtime_error("Row " + std::to_string(row) + " does not have " + std::to_string(input_data.size) + " columns.");
+            throw ReaderError("Row " + std::to_string(row) + " does not have " + std::to_string(input_data.size) + " columns.");
         }
 
         row++;
@@ -148,7 +149,7 @@ void PictureReader::genMatrix() {
     const char * img_path = path.c_str();
     unsigned char* data = stbi_load(img_path, &height, &width, &channels, 1);
     if (!data) {
-        throw std::runtime_error("Error opening image: " + path);
+        throw ReaderError("Error opening image: " + path);
     }
     if (height != width) {
         std::cerr << "WARNING: height must be equal to width. Cropping." << std::endl;

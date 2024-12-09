@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <string>
 #include <nlohmann/json.hpp>
+#include "Exceptions.h"
 #include "Reader.h"
 #include "Solver.h"
 using json = nlohmann::json;
@@ -14,30 +15,28 @@ Reader* createReader(std::filesystem::path file_path)
     std::cout << "Opening file ... " << std::filesystem::absolute(file_path) << std::endl << std::flush;
     std::ifstream config_file(file_path);
     if (!config_file.is_open()) {
-        throw std::ios_base::failure("Failed to open config. file." );
+        throw ConfigError("ERROR: Config. file not found.");
     }
 
     // Create json object
     json data = json::parse(config_file);
     config_file.close();
-    
-    // Extract run configuration
 
+    // Extract run configuration
     std::string data_type;
     try {
         data_type = data.at("INPUT");
     }
-    catch (const std::out_of_range& e) {
-        std::cerr <<"FATAL ERROR: Missing input data type." << std::endl << std::flush;
-        std::exit(EXIT_FAILURE);
+    catch (const std::exception &e) {
+        throw ConfigError("ERROR: Missing input data type.");
     }
 
-    std::string method = data.at("METHOD");
+    std::string method;
     try {
         method = data.at("METHOD");
     }
-    catch (const std::out_of_range& e) {
-        std::cerr <<"WARNING: Missing solver method. Defauting to QR method." << std::endl << std::flush;
+    catch (const std::exception &e) {
+        std::cerr <<"WARNING: Missing solver method. Defaulting to QR method." << std::endl << std::flush;
         method = "QR";
     }
 
@@ -45,8 +44,8 @@ Reader* createReader(std::filesystem::path file_path)
     try {
         max_iters=  data.at("MAX_ITERS");
     }
-    catch (const std::out_of_range& e) {
-        std::cerr <<"WARNING: Missing max. num. of iterations. Defauting to 1000." << std::endl << std::flush;
+    catch (const std::exception &e) {
+        std::cerr <<"WARNING: Missing maximum number of iterations. Defaulting to 1000." << std::endl << std::flush;
         max_iters = 1000;
     }
 
@@ -54,8 +53,8 @@ Reader* createReader(std::filesystem::path file_path)
     try {
         tol=  data.at("TOLERANCE");
     }
-    catch (const std::out_of_range& e) {
-        std::cerr <<"WARNING: Missing tolerance. Defauting to 1e-9." << std::endl << std::flush;
+    catch (const std::exception& e) {
+        std::cerr <<"WARNING: Missing tolerance. Defaulting to 1e-9." << std::endl << std::flush;
         tol = 1e-9;
     }
 
@@ -64,8 +63,7 @@ Reader* createReader(std::filesystem::path file_path)
     // Exception when valid option not given
     if (data_type != "FILE" && data_type != "FUNCTION"
         && data_type != "PICTURE") {
-        throw std::ios_base::failure("Unsupported data type. Input data needs to be either a file, a picture. or a function");
-        std::exit(EXIT_FAILURE);
+        throw ConfigError("Unsupported data type. Input data needs to be either a file, a picture. or a function");
         }
     if (method != "QR" && method != "POWER"
         && method != "INV") {
@@ -87,9 +85,8 @@ Reader* createReader(std::filesystem::path file_path)
         try {
             file_reader->genMatrix();
         }
-        catch (const std::runtime_error& e) {
-            std::cerr <<"FATAL ERROR: Error reading file." << std::endl << std::flush;
-            std::exit(EXIT_FAILURE);
+        catch (const ReaderError& e) {
+            throw;
         }
         return file_reader;
     }
