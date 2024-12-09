@@ -1,0 +1,17 @@
+{
+    "MAX_ITERS": 20,
+    "TOLERANCE": 1e-20,
+    "INPUT": "FILE",
+    "METHOD": "QR",
+
+    "_comment1": "if input is a file with the matrix",
+    "FILE": {
+        "PATH": "C:\\Users\\giova\\Documents\\GitHub\\PSCS_PROJECT\\test\\ReaderTests\\test2.csv",
+        "TYPE": "TEXT",
+        "SEP": ","
+    },
+
+    "QR": {
+
+    }
+}

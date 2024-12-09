@@ -10,7 +10,14 @@ int main(int argc, char **argv)
 {
     Reader * reader;
     try {
-        reader = createReader("../config.json");
+        if (argc==1) {
+            std::filesystem::path default_conf = "../config.json";
+            reader = createReader(default_conf);
+        }
+        else {
+            std::filesystem::path config_path = argv[1];
+            reader = createReader(config_path);
+        }
     }
     catch (const std::ios_base::failure& e){
         std::cerr << "FATAL ERROR: " << e.what() << std::endl;
