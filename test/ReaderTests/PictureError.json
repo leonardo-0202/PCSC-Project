@@ -1,12 +1,12 @@
 {
     "MAX_ITERS": 20,
     "TOLERANCE": 1e-20,
-    "INPUT": "FILE",
+    "INPUT": "PICTURE",
     "METHOD": "QR",
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {
-        "PATH": "..\\test\\ReaderTests\\RectangularMatrix.csv",
+        "PATH": "..\\test\\ReaderTests\\test1.csv",
         "TYPE": "TEXT",
         "SEP": ","
     },

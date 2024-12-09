@@ -1,0 +1,11 @@
+{
+    "INPUT": "PICTURE",
+
+    "PICTURE": {
+        "PATH": "..\\test\\ReaderTests\\non_square_image.png"
+    },
+
+    "QR": {
+
+    }
+}
