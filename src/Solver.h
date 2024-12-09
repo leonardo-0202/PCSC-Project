@@ -9,6 +9,12 @@
  * @brief Header file for all Solver based classes.
  */
 
+/**
+ * @class Solver
+ * @brief Base Solver abstract class.
+ * 
+ * Provides basic shared information between different solvers.
+ */
 class Solver
 {
     protected:

@@ -7,8 +7,18 @@
 #include "Exceptions.h"
 #include "Reader.h"
 #include "Solver.h"
+
+/** @file utils.cc
+ * @brief Implementation file for utility functions.
+ */
+
 using json = nlohmann::json;
 
+/** 
+ * @brief Create Reader object based off of a configuration file.
+ * @param file_path 'std::filesystem::path' object for the path to a run's configuration file. 
+ * @return Reader object which points to a dynamically allocated daughter of Reader class
+ */
 Reader* createReader(std::filesystem::path file_path)
 {
     // Open input stream object and check existence
@@ -111,6 +121,11 @@ Reader* createReader(std::filesystem::path file_path)
     }
 }
 
+/**
+ * @brief Create a Solver object based off of Reader object provided
+ * @param reader Reader object that contains InputData needed for solver
+ * @return Solver object which points to a dynamically allocated daughter of Solver class
+ */
 Solver* createSolver(Reader * reader)
 {
     InputData input = reader->getInputData();
@@ -130,7 +145,11 @@ Solver* createSolver(Reader * reader)
     return solver;
 }
 
-// parses complex numbers of form a + ib
+/**
+ * @brief Create complex number representation of a string in the format "a + bi"
+ * @param s 'std::string' in the format: real number + imag number * i
+ * @return 'std::complex<double>' container with the complex number
+ */
 std::complex<double> parseComplex(std::string s)
 {
     s.erase(remove_if(s.begin(), s.end(), isspace), s.end());

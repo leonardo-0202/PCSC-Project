@@ -55,30 +55,35 @@ protected:
     InputData input;
 };
 
-class PowerBasedSolverTest : public Matrices, public ::testing::TestWithParam<std::tuple<Eigen::MatrixXcd, std::string>> {
+class PowerBasedSolverTest : public Matrices, public ::testing::TestWithParam<std::tuple<Eigen::MatrixXcd, Eigen::dcomplex>> {
 protected:
     void SetUp() override {
         matrix = std::get<0>(GetParam());
-        complex_shift = std::get<1>(GetParam());
+        shift = std::get<1>(GetParam());
         input.num_iters = 2000;
         input.tol = 1e-6;
+        if (shift.imag() < 0) { 
+            sign = "-";  
+        }
+        else { sign = "+"; }
     }
     Eigen::MatrixXcd matrix;
-    std::string complex_shift;
+    Eigen::dcomplex shift;
+    std::string sign;
     InputData input;
 };
 
 TEST_P(PowerBasedSolverTest, SolverWithShiftOption) 
 {
-    // Input setup
     int n = matrix.rows();
+    Eigen::MatrixXcd shifted_matrix = matrix - shift*Eigen::MatrixXcd::Identity(n,n);
+
+    // Input setup
+    std::string complex_shift = std::to_string(shift.real()) + sign + std::to_string(shift.imag()) + "i";
     input.method_config["SHIFT"] = complex_shift;
     input.input_matrix = matrix;
     input.size = n;
-    Eigen::dcomplex shift = parseComplex(complex_shift);
-    Eigen::MatrixXcd shifted_matrix = matrix - shift*Eigen::MatrixXcd::Identity(n,n);
     
-
     // True eigenvalues
     Eigen::ComplexEigenSolver<Eigen::MatrixXcd> true_solver(shifted_matrix);
     std::vector<Eigen::dcomplex> sorted_eigenvals = sort_eigenvalues(true_solver.eigenvalues());
@@ -130,13 +135,13 @@ INSTANTIATE_TEST_SUITE_P(
     PowerBasedTestSuite,
     PowerBasedSolverTest,
     ::testing::Values(
-        std::make_tuple(Matrices().getRandom3(), "5.0 + i0.0")
-        // std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(0.0, 0.0)),
-        // std::make_tuple(Matrices().getRandom8(), Eigen::dcomplex(0.0, 0.0)),
-        // std::make_tuple(Matrices().getIdentity(), Eigen::dcomplex(0.0, 0.0)),
-        // std::make_tuple(Matrices().getDiagonalReal(), Eigen::dcomplex(0.0, 0.0)),
-        // std::make_tuple(Matrices().getDiagonalComplex(), Eigen::dcomplex(3.0, 0.0)),
-        // std::make_tuple(Matrices().getSymmetric(), Eigen::dcomplex(0.0, 0.0))
+        std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(5.0, 0.0)),
+        std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(0.0, 0.0)),
+        std::make_tuple(Matrices().getRandom8(), Eigen::dcomplex(0.0, 0.0)),
+        std::make_tuple(Matrices().getIdentity(), Eigen::dcomplex(0.0, 0.0)),
+        std::make_tuple(Matrices().getDiagonalReal(), Eigen::dcomplex(0.0, 0.0)),
+        std::make_tuple(Matrices().getDiagonalComplex(), Eigen::dcomplex(3.0, 0.0)),
+        std::make_tuple(Matrices().getSymmetric(), Eigen::dcomplex(0.0, 0.0))
     )
 );
 
