@@ -100,7 +100,8 @@ void PowerBasedSolver::solve()
         }
     }
     auto end_time = std::chrono::high_resolution_clock::now();
-    output.estimated_eigenvalues(eigenval);
+    output.estimated_eigenvalues.resize(1);
+    output.estimated_eigenvalues[0] = eigenval;
     output.estimated_error = residual.norm();
     output.execution_time = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
     output.iterations = i;
@@ -132,26 +133,26 @@ Eigen::VectorXcd InverseSolver::eigenvec_approx(Eigen::VectorXcd const& b)
 }
 
 // REMOVE EVENTUALLY
-Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)
-{
-    Eigen::MatrixXcd Q = Eigen::MatrixXd::Identity(n,n);
-    Eigen::MatrixXcd R = A;
-    for (int j=0; j<n; j++) {
-        Eigen::VectorXcd x = R.block(j, j, n - j, 1);
-        Eigen::VectorXcd e = Eigen::VectorXcd::Zero(n - j);
-        e(0) = std::complex<double>(x.norm(), 0);
-        Eigen::VectorXcd v = x - e;
-        v.normalize();
+// Eigen::MatrixXcd QRSolver::QRDecompQ(Eigen::MatrixXcd A)
+// {
+//     Eigen::MatrixXcd Q = Eigen::MatrixXd::Identity(n,n);
+//     Eigen::MatrixXcd R = A;
+//     for (int j=0; j<n; j++) {
+//         Eigen::VectorXcd x = R.block(j, j, n - j, 1);
+//         Eigen::VectorXcd e = Eigen::VectorXcd::Zero(n - j);
+//         e(0) = std::complex<double>(x.norm(), 0);
+//         Eigen::VectorXcd v = x - e;
+//         v.normalize();
 
-        Eigen::MatrixXcd H = Eigen::MatrixXcd::Identity(n, n);
-        Eigen::MatrixXcd H_sub = Eigen::MatrixXcd::Identity(n - j, n - j) - 2.0 * (v * v.adjoint());
-        H.block(j, j, n - j, n - j) = H_sub;
+//         Eigen::MatrixXcd H = Eigen::MatrixXcd::Identity(n, n);
+//         Eigen::MatrixXcd H_sub = Eigen::MatrixXcd::Identity(n - j, n - j) - 2.0 * (v * v.adjoint());
+//         H.block(j, j, n - j, n - j) = H_sub;
 
-        Q = Q * H;
-        R = H * R;
-    }
-    return Q;
-}
+//         Q = Q * H;
+//         R = H * R;
+//     }
+//     return Q;
+// }
 
 /**
  * @brief Find all eigenvalues using the QR method.
@@ -167,7 +168,7 @@ void QRSolver::solve()
     while (cnt < num_iters && err >= tol) {
         auto QR = A.householderQr();
         auto Q = QR.householderQ();
-        A = Q.transpose() * A * Q;
+        A = Q.adjoint() * A * Q;
         cnt ++;
 
         // error calculation (sub_diagonal norm)
