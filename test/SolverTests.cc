@@ -135,7 +135,7 @@ INSTANTIATE_TEST_SUITE_P(
     PowerBasedTestSuite,
     PowerBasedSolverTest,
     ::testing::Values(
-        std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(5.0, 0.0)),
+        std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(5.0, 3.0)),
         std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(0.0, 0.0)),
         std::make_tuple(Matrices().getRandom8(), Eigen::dcomplex(0.0, 0.0)),
         std::make_tuple(Matrices().getIdentity(), Eigen::dcomplex(0.0, 0.0)),
