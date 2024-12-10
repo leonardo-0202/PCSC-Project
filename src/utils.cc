@@ -35,8 +35,8 @@ Reader* createReader(std::filesystem::path file_path)
 
     // Extract run configuration
     std::string data_type;
-    data_type = getJsonValueNecessary<std::string>(data, "INPUT",
-        ConfigError("ERROR: Missing input data type."));
+    data_type = getJsonValueNecessary<std::string, ConfigError>(data, "INPUT",
+        "ERROR: Missing input data type.");
 
     std::string method;
     method = getJsonValueOptional<std::string>(data, "METHOD",
@@ -47,7 +47,7 @@ Reader* createReader(std::filesystem::path file_path)
         "WARNING: Missing maximum number of iterations. Defaulting to 1000.", 1000);
 
     double tol;
-    tol = getJsonValueOptional<double>(data, "TOL",
+    tol = getJsonValueOptional<double>(data, "TOLERANCE",
         "WARNING: Missing tolerance. Defaulting to 1e-9.", 1e-9);
 
     // Method-specific parameters. If missing, use default ones.
@@ -84,8 +84,8 @@ Reader* createReader(std::filesystem::path file_path)
     // Creating reader depending on the type of input data
     if (data_type == "FILE") {
         std::string file_path;
-        file_path = getJsonValueNecessary<std::string>(data["FILE"], "PATH",
-            ConfigError("ERROR: Missing input data file path."));
+        file_path = getJsonValueNecessary<std::string, ConfigError>(data["FILE"], "PATH",
+            "ERROR: Missing input data file path.");
 
         Reader *file_reader = new FileReader(method, max_iters, tol,
             opt_params, file_path);
@@ -95,11 +95,11 @@ Reader* createReader(std::filesystem::path file_path)
     else if (data_type == "FUNCTION") {
         std::string func;
         int size;
-        func = getJsonValueNecessary<std::string>(data["FUNCTION"], "FUNC",
-            ConfigError("ERROR: Missing matrix generating function."));
-        size = getJsonValueNecessary<int>(data["SIZE"], "SIZE",
-            ConfigError("ERROR: Missing matrix size."));
-
+        func = getJsonValueNecessary<std::string, ConfigError>(data["FUNCTION"], "FUNC",
+            "ERROR: Missing matrix generating function.");
+        size = getJsonValueNecessary<int, ConfigError>(data["FUNCTION"], "SIZE",
+            "ERROR: Missing matrix size.");
+        std::cout << size << std::endl;
         FunctionReader * function_reader = new FunctionReader(method, max_iters, tol,
             opt_params, func, size);
         tryGenMatrix(function_reader);
@@ -107,8 +107,8 @@ Reader* createReader(std::filesystem::path file_path)
     }
     else if (data_type == "PICTURE") {
         std::string picture_path;
-        picture_path = getJsonValueNecessary<std::string>(data["PICTURE"], "PATH",
-            ConfigError("ERROR: Missing picture path."));
+        picture_path = getJsonValueNecessary<std::string, ConfigError>(data["PICTURE"], "PATH",
+            "ERROR: Missing picture path.");
 
         PictureReader * picture_reader = new PictureReader(method, max_iters, tol,
             opt_params, picture_path);
@@ -199,6 +199,10 @@ std::complex<double> parseComplex(std::string s)
     return std::complex<double>(real, imm);
 }
 
+/**
+ * @brief Tries to call the genMatrix method, handling exceptions
+ * @param reader 'Reader *' Reader object to try
+ */
 void tryGenMatrix(Reader *reader) {
     try {
         reader->genMatrix();

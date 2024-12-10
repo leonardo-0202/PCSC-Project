@@ -56,7 +56,7 @@ template<typename T>
 T getJsonValueOptional(const json& data, const std::string& key, const std::string warn_msg,
     const T& default_value) {
  try {
-  return data.at(key);
+  return data.at(key).get<T>();
  } catch (const std::exception&) {
   std::cerr << warn_msg << std::endl;
   return default_value;
@@ -69,13 +69,13 @@ T getJsonValueOptional(const json& data, const std::string& key, const std::stri
  * @param key 'const std::string&' The parameter to check
  * @param error 'const std::exception' Exception to throw in case of missing parameter
  */
-template<typename T>
+template<typename T, typename E>
 T getJsonValueNecessary(const json& data, const std::string& key,
-    const std::exception & error) {
+    const std::string & err_msg) {
  try {
-  return data.at(key);
+  return data.at(key).get<T>();
  } catch (const std::exception&) {
-  throw error;
+  throw E(err_msg);
  }
 };
 
