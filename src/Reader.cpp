@@ -176,8 +176,7 @@ void FunctionReader::genMatrix()
         for(int col = 0; col<input_data.size; col++) {
             i = row + 1;
             j = col + 1;
-            //A(row,col) = expression.value();
-            std::cout << A(row,col) << std::endl;
+            A(row,col) = expression.value();
         }
     }
     input_data.input_matrix = A;

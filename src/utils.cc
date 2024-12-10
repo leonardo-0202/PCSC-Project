@@ -99,7 +99,6 @@ Reader* createReader(std::filesystem::path file_path)
             "ERROR: Missing matrix generating function.");
         size = getJsonValueNecessary<int, ConfigError>(data["FUNCTION"], "SIZE",
             "ERROR: Missing matrix size.");
-        std::cout << size << std::endl;
         FunctionReader * function_reader = new FunctionReader(method, max_iters, tol,
             opt_params, func, size);
         tryGenMatrix(function_reader);
