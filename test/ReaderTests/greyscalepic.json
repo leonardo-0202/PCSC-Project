@@ -1,0 +1,11 @@
+{
+    "INPUT": "PICTURE",
+
+    "PICTURE": {
+        "PATH": "C:\\Users\\giova\\Documents\\GitHub\\PSCS_PROJECT\\test\\ReaderTests\\test_image.png"
+    },
+
+    "QR": {
+
+    }
+}

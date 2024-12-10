@@ -5,6 +5,7 @@
 #include <string>
 #include <nlohmann/json.hpp>
 #include "Exceptions.h"
+#include "utils.h"
 #include "Reader.h"
 #include "Solver.h"
 
@@ -34,52 +35,43 @@ Reader* createReader(std::filesystem::path file_path)
 
     // Extract run configuration
     std::string data_type;
-    try {
-        data_type = data.at("INPUT");
-    }
-    catch (const std::exception &e) {
-        throw ConfigError("ERROR: Missing input data type.");
-    }
+    data_type = getJsonValueNecessary<std::string, ConfigError>(data, "INPUT",
+        "ERROR: Missing input data type.");
 
     std::string method;
-    try {
-        method = data.at("METHOD");
-    }
-    catch (const std::exception &e) {
-        std::cerr <<"WARNING: Missing solver method. Defaulting to QR method." << std::endl << std::flush;
-        method = "QR";
-    }
+    method = getJsonValueOptional<std::string>(data, "METHOD",
+        "WARNING: Missing solver method. Defaulting to QR method.","QR");
 
     int max_iters;
-    try {
-        max_iters=  data.at("MAX_ITERS");
-    }
-    catch (const std::exception &e) {
-        std::cerr <<"WARNING: Missing maximum number of iterations. Defaulting to 1000." << std::endl << std::flush;
-        max_iters = 1000;
-    }
+    max_iters = getJsonValueOptional<int>(data, "MAX_ITERS",
+        "WARNING: Missing maximum number of iterations. Defaulting to 1000.", 1000);
 
     double tol;
-    try {
-        tol=  data.at("TOLERANCE");
-    }
-    catch (const std::exception& e) {
-        std::cerr <<"WARNING: Missing tolerance. Defaulting to 1e-9." << std::endl << std::flush;
-        tol = 1e-9;
-    }
+    tol = getJsonValueOptional<double>(data, "TOLERANCE",
+        "WARNING: Missing tolerance. Defaulting to 1e-9.", 1e-9);
 
-    json opt_params = data.at(method);
+    // Method-specific parameters. If missing, use default ones.
+    json opt_params;
+    try {
+        data.at(method);
+    }
+    catch(const std::exception &e) {
+        std::cerr << "Missing solver parameters. Using default values." << std::endl << std::flush;
+        setDefaultVals(method, opt_params);
+    }
 
     // Exception when valid option not given
-    if (data_type != "FILE" && data_type != "FUNCTION"
-        && data_type != "PICTURE") {
+    std::vector<std::string> supported_data_types = {"FILE", "FUNCTION", "PICTURE"};
+    std::vector<std::string> supported_methods = {"QR", "POWER", "INV"};
+    if (std::find(supported_data_types.begin(), supported_data_types.end(), data_type) == supported_data_types.end()) {
         throw ConfigError("Unsupported data type. Input data needs to be either a file, a picture. or a function");
-        }
-    if (method != "QR" && method != "POWER"
-        && method != "INV") {
+    }
+    if (std::find(supported_methods.begin(), supported_methods.end(), method) == supported_methods.end()) {
         std::cerr <<"WARNING: Unsupported solver method. Defaulting to QR method." << std::endl << std::flush;
         method = "QR";
     }
+
+    // Adjust parameters
     if (max_iters < 0) {
         std::cerr <<"WARNING: Invalid max_iters. Defaulting to 100." << std::endl << std::flush;
         max_iters = 100;
@@ -89,34 +81,37 @@ Reader* createReader(std::filesystem::path file_path)
         tol = 1e-16;
     }
 
+    // Creating reader depending on the type of input data
     if (data_type == "FILE") {
+        std::string file_path;
+        file_path = getJsonValueNecessary<std::string, ConfigError>(data["FILE"], "PATH",
+            "ERROR: Missing input data file path.");
+
         Reader *file_reader = new FileReader(method, max_iters, tol,
-            opt_params, data["FILE"].at("PATH"));
-        try {
-            file_reader->genMatrix();
-        }
-        catch (const ReaderError& e) {
-            throw;
-        }
+            opt_params, file_path);
+        tryGenMatrix(file_reader);
         return file_reader;
     }
     else if (data_type == "FUNCTION") {
+        std::string func;
+        int size;
+        func = getJsonValueNecessary<std::string, ConfigError>(data["FUNCTION"], "FUNC",
+            "ERROR: Missing matrix generating function.");
+        size = getJsonValueNecessary<int, ConfigError>(data["FUNCTION"], "SIZE",
+            "ERROR: Missing matrix size.");
         FunctionReader * function_reader = new FunctionReader(method, max_iters, tol,
-            opt_params, data["FUNCTION"].at("FUNC"), data["FUNCTION"].at("SIZE"));
-        function_reader->genMatrix();
-
+            opt_params, func, size);
+        tryGenMatrix(function_reader);
         return function_reader;
     }
     else if (data_type == "PICTURE") {
+        std::string picture_path;
+        picture_path = getJsonValueNecessary<std::string, ConfigError>(data["PICTURE"], "PATH",
+            "ERROR: Missing picture path.");
+
         PictureReader * picture_reader = new PictureReader(method, max_iters, tol,
-            opt_params, data["PICTURE"].at("PATH"));
-        try {
-            picture_reader->genMatrix();
-        }
-        catch (const std::runtime_error& e) {
-            std::cerr <<"FATAL ERROR: Error reading picture." << std::endl << std::flush;
-            std::exit(EXIT_FAILURE);
-        }
+            opt_params, picture_path);
+        tryGenMatrix(picture_reader);
         return picture_reader;
     }
 }
@@ -146,6 +141,23 @@ Solver* createSolver(Reader * reader)
 }
 
 /**
+ * @brief Set default solving parameters in case they weren't provided
+ * @param method String that specifies the solving method
+ * @param opt_params Json object that contains the optional parameters to set
+ */
+void setDefaultVals(std::string method, json &opt_params) {
+    if (method == "QR") {
+        opt_params = json(); // QR takes no params
+    }
+    else if (method == "POWER") {
+        opt_params["SHIFT"] = 0;
+    }
+    else if (method == "INVERSE") {
+        opt_params["SHIFT"] = 0;
+    }
+}
+
+/**
  * @brief Create complex number representation of a string in the format "a + bi"
  * @param s 'std::string' in the format: real number + imag number * i
  * @return 'std::complex<double>' container with the complex number
@@ -156,11 +168,17 @@ std::complex<double> parseComplex(std::string s)
     int delim_pos = s.find('i');
     double real, imm;
 
-    if (delim_pos == std::string::npos) {
-        // No imaginary part, parse as a real number
-        real = std::stod(s);
 
+    // No imaginary part, parse as a real number
+    if (delim_pos == std::string::npos) {
+        real = std::stod(s);
         return std::complex<double>(real, 0);
+    }
+    // Some edge cases (i "means" 1i)
+    if (s == "i") {
+        return std::complex<double>(0.0, 1.0);
+    } else if (s == "-i") {
+        return std::complex<double>(0.0, -1.0);
     }
 
     int plus_pos = s.find_last_of('+');
@@ -179,3 +197,18 @@ std::complex<double> parseComplex(std::string s)
     }
     return std::complex<double>(real, imm);
 }
+
+/**
+ * @brief Tries to call the genMatrix method, handling exceptions
+ * @param reader 'Reader *' Reader object to try
+ */
+void tryGenMatrix(Reader *reader) {
+    try {
+        reader->genMatrix();
+    }
+    catch (const ReaderError& e) {
+        throw;
+    }
+}
+
+

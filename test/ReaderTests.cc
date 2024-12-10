@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include <complex>
 #include "utils.h"
+#include "Exceptions.h"
 
 // Test 1: 2x2 real matrix
 TEST(createReader, Test1) {
@@ -55,7 +56,7 @@ TEST(createReader, InvalidConfigPath) {
         {
             createReader("../random_path/invalid.json");
         },
-        std::ios_base::failure
+        ConfigError
     );
 }
 
@@ -64,19 +65,44 @@ TEST(createReader, InvalidFilePath) {
     // Expect the createReader function to throw an exception when given an invalid csv path
     EXPECT_THROW(
         {
-            createReader("../test/ReadersTests/InvalidPath.json");
+            createReader("../test/ReaderTests/InvalidPath.json");
         },
-        std::ios_base::failure
+        ReaderError
     );
 }
 
 // Test 6: Non-square matrix
-TEST(createReader, RectangularMatrix) {
+TEST(createReader, Rectangular_Matrix) {
     // Expect the createReader function to throw an exception when given an invalid csv path
     EXPECT_THROW(
         {
-            createReader("../test/ReadersTests/RectangularMatrix.json");
+            createReader("../test/ReaderTests/RectangularMatrix.json");
         },
-        std::ios_base::failure
+        ReaderError
     );
+}
+
+// Test 7: Greyscale picture
+TEST(createReader, Greyscale_Picture) {
+    EXPECT_NO_THROW(
+        {
+            createReader("../test/ReaderTests/greyscalepic.json");
+        });
+}
+
+// Test 8: Colored picture
+TEST(createReader, Colored_Picture) {
+    EXPECT_NO_THROW(
+        {
+            createReader("../test/ReaderTests/coloredpic.json");
+        });
+}
+
+
+// Test 9: Cropping
+TEST(createReader, Cropping) {
+    EXPECT_NO_THROW(
+        {
+            createReader("../test/ReaderTests/cropping.json");
+        });
 }
