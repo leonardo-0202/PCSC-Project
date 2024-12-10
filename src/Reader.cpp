@@ -5,7 +5,7 @@
 #include <nlohmann/json.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
-//#include <exprtk/exprtk.hpp>
+#include <exprtk/exprtk.hpp>
 #include "utils.h"
 #include "InputData.h"
 #include "Reader.h"
@@ -164,7 +164,6 @@ void FunctionReader::genMatrix()
     Eigen::MatrixXcd A(input_data.size, input_data.size);
     double i, j;
 
-    /*
     exprtk::symbol_table<double> symbol_table;
     symbol_table.add_variable("i", i);
     symbol_table.add_variable("j", j);
@@ -173,7 +172,6 @@ void FunctionReader::genMatrix()
 
     exprtk::parser<double> parser;
     parser.compile(func, expression);
-    */
 
     for(int row = 0; row < input_data.size; row++) {
         for(int col = 0; col<input_data.size; col++) {

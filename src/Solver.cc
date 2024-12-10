@@ -2,6 +2,7 @@
 #include <chrono>
 #include <ctime>
 #include <nlohmann/json.hpp>
+#include "Exceptions.h"
 #include "InputData.h"
 #include "Solver.h"
 #include "utils.h"

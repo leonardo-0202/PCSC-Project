@@ -33,6 +33,7 @@ int main(int argc, char **argv)
         std::cout << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+
     std::cout << "Successfully created reader." << std::endl;
     Solver * solver = createSolver(reader);
     std::cout << "Successfully created solver." << std::endl;
