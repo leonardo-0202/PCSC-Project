@@ -3,19 +3,18 @@
     "MAX_ITERS": 50,
     "TOLERANCE": 1e-9,
     "SHIFT": 1e-3,
-    "INPUT": "PICTURE",
+    "INPUT": "FILE",
     "METHOD": "QR",
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {
-        "PATH": "C:\\Users\\giova\\Desktop\\example.csv",
-        "TYPE": "TEXT",
-        "SEP": ","
+        "PATH": "C:\\Users\\giova\\Desktop\\example.csv"
     },
 
     "_comment2": "if input is a function",
     "FUNCTION": {
-        "FUNC" : "i + j + 10"
+        "FUNC" : "i + j + 10",
+	"SIZE" : 10
     },
 
     "_comment3": "if input is a picture",
@@ -29,6 +28,10 @@
     },
 
     "POWER": {
-        "SHIFT": 1
+        "SHIFT": "1 + 2i"
+    },
+
+    "INVERSE": {
+	    "SHIFT": "0"
     }
 }
