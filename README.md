@@ -158,7 +158,12 @@ The QR method only has one functionality: to find all the eigenvalues of a matri
 Our code has custom error handling to make intuitive error messaging. 
 
 ## Testing
+In our test suite contained in the `test` folder we focus on testing two parts of the code:
+- Reader classes
+- Solver classes
 
+Testing for the solvers is done in the file `SolverTests.cc`. The solver tests are meant for developers to use to cofirm their eigenvalue solver implementation is calculating the correct eigenvalues. For developers, you can easily add additional tests by including an additional matrix in the member variables of the `Matrices` class.
+ 
 ## Code Layout
 This code can be mainly split in three parts:
 - Reader classes
