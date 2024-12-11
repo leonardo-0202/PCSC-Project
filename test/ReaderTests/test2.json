@@ -6,7 +6,7 @@
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {
-        "PATH": "C:\\Users\\giova\\Documents\\GitHub\\PSCS_PROJECT\\test\\ReaderTests\\test2.csv",
+        "PATH": "../test/ReaderTests/test2.csv",
         "TYPE": "TEXT",
         "SEP": ","
     },

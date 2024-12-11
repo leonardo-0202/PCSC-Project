@@ -2,7 +2,7 @@
     "INPUT": "PICTURE",
 
     "PICTURE": {
-        "PATH": "..\\test\\ReaderTests\\square_color.png"
+        "PATH": "../test/ReaderTests/square_color.png"
     },
 
     "QR": {

@@ -1,7 +1,7 @@
 {
     "INPUT": "FILE",
     "PICTURE": {
-        "PATH": "..\\test\\ReaderTests\\test1.csv"
+        "PATH": "../test/ReaderTests/test1.csv"
     }
 
 }

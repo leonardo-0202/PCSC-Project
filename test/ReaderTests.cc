@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "Exceptions.h"
 
-// 2x2 real matrix
+// Test 1: 2x2 real matrix
 TEST(createReader, Test1) {
     Eigen::MatrixXcd expected_matrix(2, 2);
     expected_matrix << std::complex<double>(1, 0), std::complex<double>(2, 0),
@@ -16,7 +16,7 @@ TEST(createReader, Test1) {
     );
 }
 
-// 3x3 complex matrix
+// Test 2: 3x3 complex matrix
 TEST(createReader, Test2) {
     Eigen::MatrixXcd expected_matrix(3, 3);
     expected_matrix << std::complex<double>(1, 0), std::complex<double>(2, 2.1), std::complex<double>(3, 0),
@@ -29,7 +29,7 @@ TEST(createReader, Test2) {
     );
 }
 
-// 5x5 mixed matrix
+// Test 3: 5x5 mixed matrix
 TEST(createReader, Test3) {
     Eigen::MatrixXcd expected_matrix(5, 5);
     expected_matrix << std::complex<double>(1, 0),   std::complex<double>(2, 1),  std::complex<double>(3.5, -2),
@@ -49,7 +49,7 @@ TEST(createReader, Test3) {
     );
 }
 
-// Invalid config path
+// Test 4: Invalid config path
 TEST(createReader, InvalidConfigPath) {
     // Expect the createReader function to throw an exception when given an invalid config path
     EXPECT_THROW(
@@ -60,7 +60,7 @@ TEST(createReader, InvalidConfigPath) {
     );
 }
 
-// Invalid csv file path
+// Test 5: Invalid csv file path
 TEST(createReader, InvalidFilePath) {
     // Expect the createReader function to throw an exception when given an invalid csv path
     EXPECT_THROW(
@@ -71,7 +71,7 @@ TEST(createReader, InvalidFilePath) {
     );
 }
 
-// Non-square matrix
+// Test 6: Non-square matrix
 TEST(createReader, Rectangular_Matrix) {
     // Expect the createReader function to throw an exception when given an invalid csv path
     EXPECT_THROW(
@@ -82,7 +82,15 @@ TEST(createReader, Rectangular_Matrix) {
     );
 }
 
-// Function i * j
+// Test 7: parsing edgecase (numbers like 1 + i)
+TEST(createReader, parse_edgecase){
+    Eigen::MatrixXcd expected_matrix(1, 1);
+    expected_matrix << std::complex<double>(1, 1);
+    EXPECT_EQ(createReader("../test/ReaderTests/parse_edgecase.json")->getInputData().input_matrix,
+        expected_matrix);
+}
+
+// Test 7: Function i * j
 TEST(createReader, function1) {
     Eigen::MatrixXcd expected_matrix(3, 3);
     expected_matrix << std::complex<double>(1, 0), std::complex<double>(2, 0), std::complex<double>(3, 0),
@@ -92,17 +100,17 @@ TEST(createReader, function1) {
         expected_matrix);
 }
 
-// Function i^2 + 2
+// Test 8: Function i^2 + 2
 TEST(createReader, function2) {
     Eigen::MatrixXcd expected_matrix(3, 3);
-    expected_matrix << std::complex<double>(3, 0), std::complex<double>(6, 0), std::complex<double>(11, 0),
-             std::complex<double>(3, 0), std::complex<double>(6, 0), std::complex<double>(11, 0),
-             std::complex<double>(3, 0), std::complex<double>(6, 0), std::complex<double>(11, 0);
+    expected_matrix << std::complex<double>(3, 0), std::complex<double>(3, 0), std::complex<double>(3, 0),
+             std::complex<double>(6, 0), std::complex<double>(6, 0), std::complex<double>(6, 0),
+             std::complex<double>(11, 0), std::complex<double>(11, 0), std::complex<double>(11, 0);
     EXPECT_EQ(createReader("../test/ReaderTests/functiontest2.json")->getInputData().input_matrix,
         expected_matrix);
 }
 
-// Constant function, 5
+// Test 9: Constant function, 5
 TEST(createReader, function3) {
     Eigen::MatrixXcd expected_matrix(3, 3);
     expected_matrix << std::complex<double>(5, 0), std::complex<double>(5, 0), std::complex<double>(5, 0),
@@ -112,13 +120,13 @@ TEST(createReader, function3) {
         expected_matrix);
 }
 
-// Negative size in function
+// Test 10: Negative size in function
 TEST(createReader, function_negative_size) {
     EXPECT_THROW(createReader("../test/ReaderTests/func_neg_size.json"),
         ReaderError);
 }
 
-// Greyscale picture
+// Test 11: Greyscale picture
 TEST(createReader, Greyscale_Picture) {
     EXPECT_NO_THROW(
         {
@@ -126,7 +134,7 @@ TEST(createReader, Greyscale_Picture) {
         });
 }
 
-// Colored picture
+// Test 12: Colored picture
 TEST(createReader, Colored_Picture) {
     EXPECT_NO_THROW(
         {
@@ -134,7 +142,7 @@ TEST(createReader, Colored_Picture) {
         });
 }
 
-// Cropping
+// Test 13: Cropping
 TEST(createReader, Cropping) {
     EXPECT_NO_THROW(
         {

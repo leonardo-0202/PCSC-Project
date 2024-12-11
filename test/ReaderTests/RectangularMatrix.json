@@ -6,7 +6,7 @@
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {
-        "PATH": "..\\test\\ReaderTests\\RectangularMatrix.csv",
+        "PATH": "../test/ReaderTests/RectangularMatrix.csv",
         "TYPE": "TEXT",
         "SEP": ","
     },

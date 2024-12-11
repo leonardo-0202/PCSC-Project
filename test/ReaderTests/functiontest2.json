@@ -1,7 +1,7 @@
 {
     "MAX_ITERS": 20,
     "TOLERANCE": 1e-20,
-    "INPUT": "FILE",
+    "INPUT": "FUNCTION",
     "METHOD": "QR",
 
     "FUNCTION" : {

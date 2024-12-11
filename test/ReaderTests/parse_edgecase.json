@@ -6,7 +6,7 @@
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {
-        "PATH": "../test/ReaderTests/test1.csv",
+        "PATH": "../test/ReaderTests/parse_edgecase.csv",
         "TYPE": "TEXT",
         "SEP": ","
     },
