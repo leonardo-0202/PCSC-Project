@@ -64,8 +64,8 @@ void OutputGenerator::writeToCSV(const Eigen::VectorXcd & vec, std::string out_p
 void OutputGenerator::saveOutput() {
     std::cout << "Saving output file..." << std::endl;
 
-    std::ofstream htmlFile("../output.html");
-    std::string output_path = "../output.csv";
+    std::ofstream htmlFile("./output.html");
+    std::string output_path = "./output.csv";
 
     if (!htmlFile) {
         std::cerr << "WARNING: Could not open the file for writing metrics. Printing to terminal instead." << std::endl;
@@ -77,7 +77,7 @@ void OutputGenerator::saveOutput() {
     }
 
     writeToCSV(out.estimated_eigenvalues, output_path);
-    std::cout << "Eigenvalue output saved to output.csv" << std::endl;
+    std::cout << "Eigenvalue output saved to " << output_path << std::endl;
     
     htmlFile << R"(
 <!DOCTYPE html>
@@ -150,5 +150,5 @@ void OutputGenerator::saveOutput() {
 )";
 
     htmlFile.close();
-    std::cout << "Solver metrics output saved to output.html" << std::endl;
+    std::cout << "Solver metrics output saved to " << output_path << std::endl;
 }

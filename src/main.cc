@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     Reader * reader;
     try {
         if (argc==1) {
-            std::filesystem::path default_conf = "../config.json";
+            std::filesystem::path default_conf = "./config.json";
             reader = createReader(default_conf);
         }
         else {
@@ -42,13 +42,6 @@ int main(int argc, char **argv)
     OutputGenerator x = OutputGenerator(solver->getOutput());
     x.saveOutput();
 
-    // Fare destructor giusto
     free(reader);
     free(solver);
-    // Solver solver(data_reader.getInputData());
-    // Output output = Solver.solve();
 }
-
-// Reader should take all users input, and save it to a custom
-// data class, which then gets passed to a solver, which then
-// creates an output which extracts solution to a CSV
