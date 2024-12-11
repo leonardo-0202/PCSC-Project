@@ -6,9 +6,14 @@
 2. [Program Usage](#program-usage)
     - [Program Execution](#program-execution)
     - [Configuration File](#configuration-file)
-3. [Code Layout](#code-layout)
+3. [Features](#features)
+    - [Power Method](#power-method)
+    - [Inverse Power Method](#inverse-power-method)
+    - [QR Method](#qr-method)
+    - [Error Handling](#error-handling)
 4. [Testing](#testing)
-5. [Future Work](#future-work)
+5. [Code Layout](#code-layout)
+6. [Future Work](#future-work)
 
 ## Compilation
 Compilation of the code is done through CMake. In our repository we have two submodules:
@@ -30,7 +35,7 @@ cmake ..
 make
 ```
 
-The compilation will make an executable file called `main`. 
+The CMake links the source code to a file `main.cc`. The compilation will make an executable file called `main`. 
 
 ## Program Usage
 In this section we will explore the general flow of the program's execution and how to work with the configuration file.
@@ -44,7 +49,7 @@ To interact with the code, you must work with the configuration file `config.jso
 
 The configuration file allows a user to interact with the program by assigning values to a default JSON structure. Common parameters across different eigenvalue solvers, like the number of iterations and tolerance, will be default keys at the outermost level in the JSON object. Users can control the solver desired and the type of input provided in this configuration file. 
 
-Once users have altered the configuration file with how they want to use the code, you can compile and execute. 
+Once users have altered the configuration file with how they want to use the code, you can compile and execute. There is no need to recompile when making alterations to the configuration file. 
 
 ### Configuration File
 In this section we will give all details about the configuration file and how a user can interact with it. The file can be effectively split into three parts:
@@ -53,7 +58,7 @@ In this section we will give all details about the configuration file and how a 
 - Method specific configuration 
 
 #### Basic Configuration
-This is the part of the file that is used everytime a solver is run, no matter the specific methodology used. Here is a non-exhaustive list of the parameters that the user must interact with upon use:
+This is the part of the file that is used everytime a solver is run, no matter the specific methodology used. Here is a list of the parameters that the user can interact with upon use:
 - "MAX_ITERS"
 - "TOLERANCE"
 - "INPUT"
@@ -61,10 +66,10 @@ This is the part of the file that is used everytime a solver is run, no matter t
 
 Every solver implemented in our code is an iterative method, thus `MAX_ITERS` expects an integer value signifying the maximum number of iterations for the method. 
 
-`TOLERANCE` expects a real number and is used to meaure convergence. 
+`TOLERANCE` expects a real number and is used to meaure convergence at each iteration. 
 
 `INPUT` allows the user to specify how they want to provide an input matrix. Our current implementation supports three input types:
-- "FILE": a text file containing the full matrix
+- "FILE": a CSV file containing the full matrix
 - "FUNCTION": a function for how to build the matrix
 - "PICTURE": an image that will be read as gray-scale
 
@@ -101,9 +106,79 @@ Each `INPUT` type has a specific configuration.
 
 The QR method does not have any specific configuration. Future developers can easily add the configuration for a new method using a unique nested object.
 
-## Code Layout
+#### Example Configuration 
+Below is an example configuration only showing the relevant entries. The configuration file provided in the repository contains all possible entries.
+
+```json
+{
+    "MAX_ITERS": 500,
+    "TOLERANCE": 1e-6,
+    "INPUT": "FILE",
+    "METHOD": "POWER",
+
+    "FILE": {
+        "PATH": "C:\\Users\\giova\\Desktop\\example.csv"
+    },
+
+    "POWER": {
+        "SHIFT": 5
+    }
+}
+```
+
+## Features
+In this section will go through the features of our code and what it can be used for. As mentioned before, the user has control of the input provided and the method they want to use.
+
+Our code provides the functionality to find eigenvalues of complex or real matrices. The matrices can be provided via:
+- CSV files
+- An expression in *i* and *j*
+- Gray-scale images
+
+The CSV files would take the following form for a 2x2 matrix:
+```csv
+1+2i, 1
+4, 4-5i
+```
+
+Our code has support for three different iterative methods for finding eigenvalues:
+- Power method with an optional shift
+- Inverse power method with an optional shift
+- QR method
+
+### Power Method
+The power method by default finds the largest in magnitude eigenvalue of a matrix. By providing a shift $\mu$, you can alter the input matrix ($A-\mu I$). This has the effect of providing the same shift to the eigenvalues of $A$, $\lambda_i - \mu$ for $\lambda_1$ to $\lambda_n$. Our power method code returns the eigenvalue of $A$ corresponding to the largest eigenvalue in the shifted matrix. By utilizing different shifts, you can find different eigenvalues of $A$ than the largest in magnitude.
+
+### Inverse Power Method
+The inverse power method by default finds the smallest in magnitude eigenvalue of a matrix. By providing a shift $\mu$, you can alter the input matrix ($A-\mu I$). The inverse power method solver with a shift will find the eigenvalue closest to the shift provided. This method is especially useful if you have an estimate for an eigenvalue beforehand.
+
+### QR Method
+The QR method only has one functionality: to find all the eigenvalues of a matrix. 
+
+### Error Handling
+Our code has custom error handling to make intuitive error messaging. 
 
 ## Testing
 
+## Code Layout
+This code can be mainly split in three parts:
+- Reader classes
+- Solver classes
+- OutputGenerator class
+
+### Reader Structure
+![Reader Structure](skeleton/Reader.svg)
+
+### Solver Structure
+![Solver Structure](skeleton/Solver.svg)
+
+### OutputGenerator Structure
+![OutputGenerator Structure](skeleton/OutputGenerator.svg)
+
+### Data Structures
+![InputData Structure](skeleton/InputData.svg)
+
+![OutputData Structure](skeleton/OutputData.svg)
+
 ## Future Work
 
+- In the future we need to add support for more input options. As of now, text files are limited to CSV. We would like to add support for different delimeters. 

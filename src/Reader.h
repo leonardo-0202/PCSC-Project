@@ -88,7 +88,7 @@ public:
      * @param size The size of the matrix desired.
      */
     FunctionReader(std::string const& method, int const& num_iters, double const& tol,
-        nlohmann::json const& opt_params, std::string const& func, int size);
+        nlohmann::json const& opt_params, std::string const& func, int const& size);
     /// Implemented method to generate an Eigen::MatrixXcd object
     void genMatrix();
 };

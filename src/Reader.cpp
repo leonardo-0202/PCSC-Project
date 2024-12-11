@@ -56,7 +56,7 @@ FileReader::FileReader(std::string const& method, int const& num_iters, double c
  * @param size The size of the matrix desired.
  */
 FunctionReader::FunctionReader(std::string const& method, int const& num_iters,
-    double const& tol, nlohmann::json const& opt_params, std::string const& genFunc, int size)
+    double const& tol, nlohmann::json const& opt_params, std::string const& genFunc, int const& size)
     : Reader(method, num_iters, tol, opt_params)
 {
     func = genFunc;
