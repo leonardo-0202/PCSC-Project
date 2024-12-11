@@ -4,7 +4,7 @@
 #include "utils.h"
 #include "Exceptions.h"
 
-// Test 1: 2x2 real matrix
+// 2x2 real matrix
 TEST(createReader, Test1) {
     Eigen::MatrixXcd expected_matrix(2, 2);
     expected_matrix << std::complex<double>(1, 0), std::complex<double>(2, 0),
@@ -16,7 +16,7 @@ TEST(createReader, Test1) {
     );
 }
 
-// Test 2: 3x3 complex matrix
+// 3x3 complex matrix
 TEST(createReader, Test2) {
     Eigen::MatrixXcd expected_matrix(3, 3);
     expected_matrix << std::complex<double>(1, 0), std::complex<double>(2, 2.1), std::complex<double>(3, 0),
@@ -29,7 +29,7 @@ TEST(createReader, Test2) {
     );
 }
 
-// Test 3: 5x5 mixed matrix
+// 5x5 mixed matrix
 TEST(createReader, Test3) {
     Eigen::MatrixXcd expected_matrix(5, 5);
     expected_matrix << std::complex<double>(1, 0),   std::complex<double>(2, 1),  std::complex<double>(3.5, -2),
@@ -49,7 +49,7 @@ TEST(createReader, Test3) {
     );
 }
 
-// Test 4: Invalid config path
+// Invalid config path
 TEST(createReader, InvalidConfigPath) {
     // Expect the createReader function to throw an exception when given an invalid config path
     EXPECT_THROW(
@@ -60,7 +60,7 @@ TEST(createReader, InvalidConfigPath) {
     );
 }
 
-// Test 5: Invalid csv file path
+// Invalid csv file path
 TEST(createReader, InvalidFilePath) {
     // Expect the createReader function to throw an exception when given an invalid csv path
     EXPECT_THROW(
@@ -71,7 +71,7 @@ TEST(createReader, InvalidFilePath) {
     );
 }
 
-// Test 6: Non-square matrix
+// Non-square matrix
 TEST(createReader, Rectangular_Matrix) {
     // Expect the createReader function to throw an exception when given an invalid csv path
     EXPECT_THROW(
@@ -82,7 +82,43 @@ TEST(createReader, Rectangular_Matrix) {
     );
 }
 
-// Test 7: Greyscale picture
+// Function i * j
+TEST(createReader, function1) {
+    Eigen::MatrixXcd expected_matrix(3, 3);
+    expected_matrix << std::complex<double>(1, 0), std::complex<double>(2, 0), std::complex<double>(3, 0),
+             std::complex<double>(2, 0), std::complex<double>(4, 0), std::complex<double>(6, 0),
+             std::complex<double>(3, 0), std::complex<double>(6, 0), std::complex<double>(9, 0);
+    EXPECT_EQ(createReader("../test/ReaderTests/functiontest1.json")->getInputData().input_matrix,
+        expected_matrix);
+}
+
+// Function i^2 + 2
+TEST(createReader, function2) {
+    Eigen::MatrixXcd expected_matrix(3, 3);
+    expected_matrix << std::complex<double>(3, 0), std::complex<double>(6, 0), std::complex<double>(11, 0),
+             std::complex<double>(3, 0), std::complex<double>(6, 0), std::complex<double>(11, 0),
+             std::complex<double>(3, 0), std::complex<double>(6, 0), std::complex<double>(11, 0);
+    EXPECT_EQ(createReader("../test/ReaderTests/functiontest2.json")->getInputData().input_matrix,
+        expected_matrix);
+}
+
+// Constant function, 5
+TEST(createReader, function3) {
+    Eigen::MatrixXcd expected_matrix(3, 3);
+    expected_matrix << std::complex<double>(5, 0), std::complex<double>(5, 0), std::complex<double>(5, 0),
+             std::complex<double>(5, 0), std::complex<double>(5, 0), std::complex<double>(5, 0),
+             std::complex<double>(5, 0), std::complex<double>(5, 0), std::complex<double>(5, 0);
+    EXPECT_EQ(createReader("../test/ReaderTests/functiontest3.json")->getInputData().input_matrix,
+        expected_matrix);
+}
+
+// Negative size in function
+TEST(createReader, function_negative_size) {
+    EXPECT_THROW(createReader("../test/ReaderTests/func_neg_size.json"),
+        ReaderError);
+}
+
+// Greyscale picture
 TEST(createReader, Greyscale_Picture) {
     EXPECT_NO_THROW(
         {
@@ -90,7 +126,7 @@ TEST(createReader, Greyscale_Picture) {
         });
 }
 
-// Test 8: Colored picture
+// Colored picture
 TEST(createReader, Colored_Picture) {
     EXPECT_NO_THROW(
         {
@@ -98,11 +134,11 @@ TEST(createReader, Colored_Picture) {
         });
 }
 
-
-// Test 9: Cropping
+// Cropping
 TEST(createReader, Cropping) {
     EXPECT_NO_THROW(
         {
             createReader("../test/ReaderTests/cropping.json");
         });
 }
+
