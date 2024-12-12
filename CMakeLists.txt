@@ -13,8 +13,8 @@ if(GIT_SUBMODULE)
     endif()
 endif(GIT_SUBMODULE)
 
-option(DOCUMENTATION "Activate documentation" OFF)
-if (DOCUMENTATION STREQUAL "ON")
+option(DOCUMENTATION "Activate documentation" ON)
+if (DOCUMENTATION ON)
     set(DOXYGEN_EXECUTABLE doxygen)
     set(DOXYFILE Doxyfile)
     add_custom_target(doc_doxygen ALL
