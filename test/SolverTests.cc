@@ -17,6 +17,10 @@ class Matrices
             A_diagonal_real = Eigen::MatrixXcd::Zero(3, 3);
             A_diagonal_real.diagonal() << Eigen::dcomplex(1.0, 0.0), 
                 Eigen::dcomplex(2.0, 0.0), Eigen::dcomplex(3.0, 0.0);
+            A_diagonal_flipped = Eigen::MatrixXcd::Zero(3,3);
+            A_diagonal_flipped(0,2) = Eigen::dcomplex(1.0, 0.0);
+            A_diagonal_flipped(1,1) = Eigen::dcomplex(2.0, 0.0);
+            A_diagonal_flipped(2,0) = Eigen::dcomplex(3.0, 0.0);
             A_diagonal_complex = Eigen::MatrixXcd::Zero(3, 3);
             A_diagonal_complex.diagonal() << Eigen::dcomplex(1.0, 1.0), 
                 Eigen::dcomplex(2.0, 7.0), Eigen::dcomplex(3.0, 4.0);
@@ -32,6 +36,7 @@ class Matrices
         Eigen::MatrixXcd getRandom8() const { return A_random8; }
         Eigen::MatrixXcd getIdentity() const { return A_identity; }
         Eigen::MatrixXcd getDiagonalReal() const { return A_diagonal_real; }
+        Eigen::MatrixXcd getFlippedDiagonal() const { return A_diagonal_flipped; }
         Eigen::MatrixXcd getDiagonalComplex() const { return A_diagonal_complex; }
         Eigen::MatrixXcd getSymmetric() const { return A_symmetric; }
 
@@ -40,6 +45,7 @@ class Matrices
         Eigen::MatrixXcd A_random8;
         Eigen::MatrixXcd A_identity;
         Eigen::MatrixXcd A_diagonal_real;
+        Eigen::MatrixXcd A_diagonal_flipped;
         Eigen::MatrixXcd A_diagonal_complex;
         Eigen::MatrixXcd A_symmetric;
 };
@@ -141,7 +147,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(Matrices().getIdentity(), Eigen::dcomplex(0.0, 0.0)),
         std::make_tuple(Matrices().getDiagonalReal(), Eigen::dcomplex(0.0, 0.0)),
         std::make_tuple(Matrices().getDiagonalComplex(), Eigen::dcomplex(3.0, 0.0)),
-        std::make_tuple(Matrices().getSymmetric(), Eigen::dcomplex(0.0, 0.0))
+        std::make_tuple(Matrices().getSymmetric(), Eigen::dcomplex(0.0, 0.0)),
+        std::make_tuple(Matrices().getFlippedDiagonal(), Eigen::dcomplex(0.0, 0.0))
     )
 );
 

@@ -12,6 +12,8 @@
     - [QR Method](#qr-method)
     - [Error Handling](#error-handling)
 4. [Testing](#testing)
+    - [Reader Tests](#reader-tests)
+    - [Solver Tests](#solver-tests)
 5. [Code Layout](#code-layout)
 6. [Future Work](#future-work)
 
@@ -20,7 +22,7 @@ Compilation of the code is done through CMake. In our repository we have two sub
  - eigen
  - googletest
 
-In order to compile the code, you should first populate the submodules.
+In order to compile the code, you should first populate the submodules. The make file does this automatically but you can explicitly do it with this command.
 
 ```
 git submodule update --init
@@ -117,7 +119,7 @@ Below is an example configuration only showing the relevant entries. The configu
     "METHOD": "POWER",
 
     "FILE": {
-        "PATH": "C:\\Users\\giova\\Desktop\\example.csv"
+        "PATH": "path_to_matrix.csv"
     },
 
     "POWER": {
@@ -135,7 +137,7 @@ Our code provides the functionality to find eigenvalues of complex or real matri
 - Gray-scale images
 
 The CSV files would take the following form for a 2x2 matrix:
-```csv
+```
 1+2i, 1
 4, 4-5i
 ```
@@ -155,14 +157,22 @@ The inverse power method by default finds the smallest in magnitude eigenvalue o
 The QR method only has one functionality: to find all the eigenvalues of a matrix. 
 
 ### Error Handling
-Our code has custom error handling to make intuitive error messaging. 
+Our code has custom error handling to make intuitive and adaptable error messaging. We created a parent Error class that handles a message and two daughter classes, ConfigError and ReaderError. 
 
 ## Testing
 In our test suite contained in the `test` folder we focus on testing two parts of the code:
 - Reader classes
 - Solver classes
 
-Testing for the solvers is done in the file `SolverTests.cc`. The solver tests are meant for developers to use to cofirm their eigenvalue solver implementation is calculating the correct eigenvalues. For developers, you can easily add additional tests by including an additional matrix in the member variables of the `Matrices` class.
+### Reader Tests
+In the file `ReaderTests.cc` we provide a variety of tests to check whether the Reader classes generate the correct input matrix for different input types and throw exceptions when expected. Each test takes a configuration file located in the directory `ReaderTests` and creates the relevant Reader class. For problematic configurations, we test that the code throws the appropriate exception. Users wanting to add additional tests can add the configuration they want to test in the `ReaderTests` folder along with necessary files needed for the configuration. 
+
+### Solver Tests
+Testing for the solvers is done in the file `SolverTests.cc`. The solver tests are meant for developers to use to confirm their eigenvalue solver implementation is calculating the correct eigenvalues. For developers, you can easily add additional tests by including additional matrices in the member variables of the `Matrices` class and adding the test configuration in the INSTANTIATE_TEST_SUITE_P class. The eigenvalues calculated from our solvers are compared with ComplexEigenSolver in the Eigen library. 
+
+There are two solver suites: one for PowerBasedSolvers and one for the QR method. We use GoogleTest's templated TestWithParam class for both suites. In the PowerBasedSolver test suite our parameter is a tuple containing the matrix to test on and the complex shift to apply. In the QR method test suite our parameter is only the matrix to test on. Each suite tests whether the eigenvalues our solvers calculate and the built-in solver calculates are within a certain precision of one another.  
+
+For both suites we use 2000 iterations and a tolerance for convergence of 1e-6 for the solvers.
  
 ## Code Layout
 This code can be mainly split in three parts:
@@ -186,4 +196,7 @@ This code can be mainly split in three parts:
 
 ## Future Work
 
-- In the future we need to add support for more input options. As of now, text files are limited to CSV. We would like to add support for different delimeters. 
+- In the future we need to add support for more input options. As of now, text files are limited to CSV. We would like to add support for different delimeters.
+- The power and inverse methods only find a singular eigenvalue. We implement a method to get all eigenvalues with these methods.  
+- Implement other types of solvers.
+- Add support for plotting convergence.

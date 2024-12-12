@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     Reader * reader;
     try {
         if (argc==1) {
-            std::filesystem::path default_conf = "./config.json";
+            std::filesystem::path default_conf = "../config.json";
             reader = createReader(default_conf);
         }
         else {
