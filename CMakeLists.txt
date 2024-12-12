@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.22)
+cmake_minimum_required (VERSION 3.16)
 project (PCSC-project)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -13,17 +13,16 @@ if(GIT_SUBMODULE)
     endif()
 endif(GIT_SUBMODULE)
 
-
-# option(DOCUMENTATION "Activate documentation" ON)
-# if (DOCUMENTATION)
-#     set(DOXYGEN_EXECUTABLE doxygen)
-#     set(DOXYFILE Doxyfile)
-#     add_custom_target(doc_doxygen ALL
-#             COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYFILE}
-#             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-#             COMMENT "Generating API documentation with Doxygen"
-#             VERBATIM)
-# endif(DOCUMENTATION)
+option(DOCUMENTATION "Activate documentation" OFF)
+if (DOCUMENTATION STREQUAL "ON")
+    set(DOXYGEN_EXECUTABLE doxygen)
+    set(DOXYFILE Doxyfile)
+    add_custom_target(doc_doxygen ALL
+            COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${DOXYFILE}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
+endif()
 
 include_directories(eigen external)
 
