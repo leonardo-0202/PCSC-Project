@@ -183,7 +183,16 @@ std::complex<double> parseComplex(std::string s)
 
     int plus_pos = s.find_last_of('+');
     int min_pos = s.find_last_of('-');
-    if (plus_pos != std::string::npos){
+
+    if (plus_pos != std::string::npos && delim_pos - plus_pos == 1) {
+        real = std::stod(s.substr(0,plus_pos));
+        imm = 1;
+    }
+    else if (min_pos != std::string::npos && delim_pos - min_pos == 1) {
+        real = std::stod(s.substr(0,min_pos));
+        imm = -1;
+    }
+    else if (plus_pos != std::string::npos){
         real = std::stod(s.substr(0,plus_pos));
         imm = std::stod(s.substr(plus_pos, delim_pos-1));
     }
