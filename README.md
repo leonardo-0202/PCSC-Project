@@ -134,7 +134,7 @@ In this section will go through the features of our code and what it can be used
 Our code provides the functionality to find eigenvalues of complex or real matrices. The matrices can be provided via:
 - CSV files
 - An expression in *i* and *j*
-- Gray-scale images
+- Images (will be converted to gray-scale)
 
 The CSV files would take the following form for a 2x2 matrix:
 ```

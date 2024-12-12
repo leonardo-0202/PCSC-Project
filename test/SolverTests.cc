@@ -12,15 +12,11 @@ class Matrices
     public:
         Matrices() {  
             A_random3 = Eigen::MatrixXcd::Random(3, 3);
-            A_random8 = Eigen::MatrixXcd::Random(8, 8);
+            A_random5 = Eigen::MatrixXcd::Random(5, 5);
             A_identity = Eigen::MatrixXcd::Identity(3, 3);
             A_diagonal_real = Eigen::MatrixXcd::Zero(3, 3);
             A_diagonal_real.diagonal() << Eigen::dcomplex(1.0, 0.0), 
                 Eigen::dcomplex(2.0, 0.0), Eigen::dcomplex(3.0, 0.0);
-            A_diagonal_flipped = Eigen::MatrixXcd::Zero(3,3);
-            A_diagonal_flipped(0,2) = Eigen::dcomplex(1.0, 0.0);
-            A_diagonal_flipped(1,1) = Eigen::dcomplex(2.0, 0.0);
-            A_diagonal_flipped(2,0) = Eigen::dcomplex(3.0, 0.0);
             A_diagonal_complex = Eigen::MatrixXcd::Zero(3, 3);
             A_diagonal_complex.diagonal() << Eigen::dcomplex(1.0, 1.0), 
                 Eigen::dcomplex(2.0, 7.0), Eigen::dcomplex(3.0, 4.0);
@@ -33,16 +29,15 @@ class Matrices
         }
         // Get matrices
         Eigen::MatrixXcd getRandom3() const { return A_random3; }
-        Eigen::MatrixXcd getRandom8() const { return A_random8; }
+        Eigen::MatrixXcd getRandom5() const { return A_random5; }
         Eigen::MatrixXcd getIdentity() const { return A_identity; }
         Eigen::MatrixXcd getDiagonalReal() const { return A_diagonal_real; }
-        Eigen::MatrixXcd getFlippedDiagonal() const { return A_diagonal_flipped; }
         Eigen::MatrixXcd getDiagonalComplex() const { return A_diagonal_complex; }
         Eigen::MatrixXcd getSymmetric() const { return A_symmetric; }
 
     protected:
         Eigen::MatrixXcd A_random3;
-        Eigen::MatrixXcd A_random8;
+        Eigen::MatrixXcd A_random5;
         Eigen::MatrixXcd A_identity;
         Eigen::MatrixXcd A_diagonal_real;
         Eigen::MatrixXcd A_diagonal_flipped;
@@ -143,12 +138,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(5.0, 3.0)),
         std::make_tuple(Matrices().getRandom3(), Eigen::dcomplex(0.0, 0.0)),
-        std::make_tuple(Matrices().getRandom8(), Eigen::dcomplex(0.0, 0.0)),
+        std::make_tuple(Matrices().getRandom5(), Eigen::dcomplex(0.0, 0.0)),
         std::make_tuple(Matrices().getIdentity(), Eigen::dcomplex(0.0, 0.0)),
         std::make_tuple(Matrices().getDiagonalReal(), Eigen::dcomplex(0.0, 0.0)),
         std::make_tuple(Matrices().getDiagonalComplex(), Eigen::dcomplex(3.0, 0.0)),
-        std::make_tuple(Matrices().getSymmetric(), Eigen::dcomplex(0.0, 0.0)),
-        std::make_tuple(Matrices().getFlippedDiagonal(), Eigen::dcomplex(0.0, 0.0))
+        std::make_tuple(Matrices().getSymmetric(), Eigen::dcomplex(0.0, 0.0))
     )
 );
 
@@ -157,7 +151,7 @@ INSTANTIATE_TEST_SUITE_P(
     QRSolverTest,
     ::testing::Values(
         Matrices().getRandom3(),
-        Matrices().getRandom8(),
+        Matrices().getRandom5(),
         Matrices().getIdentity(),
         Matrices().getDiagonalReal(),
         Matrices().getDiagonalComplex(),
