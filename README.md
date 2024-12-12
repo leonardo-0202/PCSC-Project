@@ -160,9 +160,11 @@ The QR method only has one functionality: to find all the eigenvalues of a matri
 Our code has custom error handling to make intuitive and adaptable error messaging. We created a parent Error class that handles a message and two daughter classes, ConfigError and ReaderError. 
 
 ## Testing
-In our test suite contained in the `test` folder we focus on testing two parts of the code:
+In our test suites contained in the `test` folder we focus on testing two parts of the code:
 - Reader classes
 - Solver classes
+
+During compilation, an executable called `test_pcsc` will be produced. To run the test suites, you simply execute `./test_pcsc`. 
 
 ### Reader Tests
 In the file `ReaderTests.cc` we provide a variety of tests to check whether the Reader classes generate the correct input matrix for different input types and throw exceptions when expected. Each test takes a configuration file located in the directory `ReaderTests` and creates the relevant Reader class. For problematic configurations, we test that the code throws the appropriate exception. Users wanting to add additional tests can add the configuration they want to test in the `ReaderTests` folder along with necessary files needed for the configuration. 
