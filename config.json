@@ -8,20 +8,19 @@
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {
-        "PATH": "C:\\Users\\giova\\Desktop\\example.csv"
+        "PATH": "../example/example.csv"
     },
 
     "_comment2": "if input is a function",
     "FUNCTION": {
         "FUNC" : "i + j + 10",
-	"SIZE" : 10
+	    "SIZE" : 10
     },
 
     "_comment3": "if input is a picture",
     "PICTURE": {
-        "PATH" : "C:\\Users\\giova\\Desktop\\cat.png"
+        "PATH" : "../example/cat.png"
     },
-
 
     "QR": {
 
