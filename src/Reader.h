@@ -30,6 +30,8 @@ public:
      */
     Reader(std::string const& method, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params);
+    /// Abstract Reader destructor
+    virtual ~Reader() {}; 
     /**
      * @brief Method to retrieve the input data.
      * @return An InputData object containing the matrix and related parameters.
@@ -64,6 +66,8 @@ public:
      */
     FileReader(std::string const& method, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params, std::string const& path);
+    /// FileReader destructor
+    ~FileReader() {};
     /// Implemented method to generate an Eigen::MatrixXcd object
     void genMatrix();
 };
@@ -89,6 +93,8 @@ public:
      */
     FunctionReader(std::string const& method, int const& num_iters, double const& tol,
         nlohmann::json const& opt_params, std::string const& func, int const& size);
+    /// FunctionReader destructor
+    ~FunctionReader() {};
     /// Implemented method to generate an Eigen::MatrixXcd object
     void genMatrix();
 };
@@ -113,6 +119,8 @@ public:
      */
     PictureReader(std::string const& method, int const& num_iters,
         double const& tol, nlohmann::json const& opt_params, std::string const& path);
+    /// PictureReader destructor
+    ~PictureReader() {};
     /// Implemented method to generate an Eigen::MatrixXcd object
     void genMatrix();
 };

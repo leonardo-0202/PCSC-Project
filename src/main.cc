@@ -42,6 +42,6 @@ int main(int argc, char **argv)
     OutputGenerator x = OutputGenerator(solver->getOutput());
     x.saveOutput();
 
-    free(reader);
-    free(solver);
+    delete reader;
+    delete solver;
 }

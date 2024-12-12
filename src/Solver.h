@@ -30,6 +30,8 @@ class Solver
          * @param input The input data of the problem to initialize protected attributes.
          */
         Solver(InputData input);
+        /// Abstract destructor
+        virtual ~Solver() {};
         /**
          * @brief Method to get OutputData struct
          * @return Struct containing information about a solver's run
@@ -65,6 +67,8 @@ class PowerBasedSolver : public Solver
         * @param input The input data of the problem contained in InputData struct.
         */
         PowerBasedSolver(InputData input); 
+        /// Abstract destructor
+        virtual ~PowerBasedSolver() {};
         /**
          * @brief Overriden solve method from Solver class. 
          * Generalized to work for shift, power, and inverse methods. 
@@ -87,6 +91,8 @@ class PowerSolver : public PowerBasedSolver
          * @param input The input data of the problem contained in InputData struct.
          */
         PowerSolver(InputData input);
+        /// PowerSolver destructor
+        ~PowerSolver() {};
         /**
          * @brief Power method implementation of eigenvector approximation at each iteration. 
          */
@@ -110,6 +116,8 @@ class InverseSolver : public PowerBasedSolver
          * @param input The input data of the problem contained in InputData struct.
          */
         InverseSolver(InputData input);
+        /// InverseSolver destructor
+        ~InverseSolver() {};
         /**
          * @brief Inverse power method implementation of eigenvector approximation at each iteration.
          */
@@ -128,6 +136,8 @@ class QRSolver : public Solver
         * @param input The input data of the problem contained in InputData struct.
         */
         QRSolver(InputData input);
+        /// QRSolver destructor
+        ~QRSolver() {};
         /**
         * @brief Overriden solve method from Solver class. 
         * Solves for the eigenvalues using the QR method.
