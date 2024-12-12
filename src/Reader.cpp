@@ -160,6 +160,10 @@ void FileReader::genMatrix()
 /// Implemented method for FunctionReader to generate an Eigen::MatrixXcd object
 void FunctionReader::genMatrix()
 {
+    if (input_data.size <= 0) {
+        throw ReaderError("Error: size must be non-negative.");
+    }
+
     Eigen::MatrixXcd A(input_data.size, input_data.size);
     double i, j;
 
