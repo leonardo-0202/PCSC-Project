@@ -150,5 +150,5 @@ void OutputGenerator::saveOutput() {
 )";
 
     htmlFile.close();
-    std::cout << "Solver metrics output saved to " << output_path << std::endl;
+    std::cout << "Solver metrics output saved to " << "./output.html" << std::endl;
 }
