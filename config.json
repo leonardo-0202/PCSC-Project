@@ -2,9 +2,8 @@
     "SIZE": 5,
     "MAX_ITERS": 50,
     "TOLERANCE": 1e-9,
-    "SHIFT": 1e-3,
     "INPUT": "FILE",
-    "METHOD": "QR",
+    "METHOD": "POWER",
 
     "_comment1": "if input is a file with the matrix",
     "FILE": {

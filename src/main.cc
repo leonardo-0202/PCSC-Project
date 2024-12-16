@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     std::cout << "Successfully created solver." << std::endl;
     solver->solve();
 
-    OutputGenerator x = OutputGenerator(solver->getOutput());
+    OutputGenerator x(solver->getOutput());
     x.saveOutput();
 
     delete reader;

@@ -53,7 +53,7 @@ Reader* createReader(std::filesystem::path file_path)
     // Method-specific parameters. If missing, use default ones.
     json opt_params;
     try {
-        data.at(method);
+        opt_params = data.at(method);
     }
     catch(const std::exception &e) {
         std::cerr << "Missing solver parameters. Using default values." << std::endl << std::flush;
@@ -62,7 +62,7 @@ Reader* createReader(std::filesystem::path file_path)
 
     // Exception when valid option not given
     std::vector<std::string> supported_data_types = {"FILE", "FUNCTION", "PICTURE"};
-    std::vector<std::string> supported_methods = {"QR", "POWER", "INV"};
+    std::vector<std::string> supported_methods = {"QR", "POWER", "INVERSE"};
     if (std::find(supported_data_types.begin(), supported_data_types.end(), data_type) == supported_data_types.end()) {
         throw ConfigError("Unsupported data type. Input data needs to be either a file, a picture. or a function");
     }
@@ -133,7 +133,7 @@ Solver* createSolver(Reader * reader)
     {
         solver = new PowerSolver(reader->getInputData());
     }
-    else if (input.method == "INV")
+    else if (input.method == "INVERSE")
     {
         solver = new InverseSolver(reader->getInputData());
     }
